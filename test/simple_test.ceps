@@ -1,0 +1,66 @@
+
+kind v2gResponsCodeType;
+kind v2gEVSENotificationType;
+
+v2gResponsCodeType 	OK,
+					OK_NewSessionEstablished,
+					OK_OldSessionJoined,
+					OK_CertificateExpiresSoon ,
+					OK_IsolationValid,
+					OK_IsolationWarning,
+					WARNING_CertificateExpired,
+					WARNING_NoCertificateAvailable,
+					WARNING_CertValidationError,
+					WARNING_CertVerificationError,
+					WARNING_ContractCanceled,
+					FAILED,
+					FAILED_SequenceError,
+					FAILED_ServiceIDInvalid,
+					FAILED_UnknownSession,
+					FAILED_ServiceSelectionInvalid,
+					FAILED_SignatureError,
+					FAILED_PaymentSelectionInvalid,
+					FAILED_ChallengeInvalid,
+					FAILED_WrongChargeParameter,
+					FAILED_IsolationFault,
+					FAILED_PowerDeliveryNotApplied,
+					FAILED_TariffSelectionInvalid,
+					FAILED_ChargingProfileInvalid,
+					FAILED_MeteringSignatureNotValid,
+					FAILED_NoChargeServiceSelected,
+					FAILED_WrongEnergyTransferMode,
+					FAILED_ContactorError,
+					FAILED_CertificateRevoked,
+					FAILED_CertificateNotYetValid;
+
+v2gEVSENotificationType StopCharging, ReNegotiation;
+
+v2g(
+	SessionSetupReq{
+		EVCCID{
+			1;2;3;4;5;6;			
+		};
+	}
+);
+
+
+v2g(
+	SessionSetupRes{
+		ResponseCode{
+			FAILED_MeteringSignatureNotValid;			
+		};
+		EVSEID{
+			1234567;
+		};
+		EVSETimeStamp{
+			123456789;
+		};
+		EVSEStatus{
+			NotificationMaxDelay{11;};
+			EVSENotification{ReNegotiation;};
+		};
+	}
+);
+
+
+//print ("result = ",root.result.content(),"\n\n");
