@@ -21,6 +21,7 @@
 #include "core/include/state_machine_simulation_core.hpp"
 
 
+
 #include "iso2EXIDatatypes.h" 
 
 
@@ -88,11 +89,12 @@ namespace ceps2openv2g{
     class MessageBuilder{
 
         template<typename T> T emit(ceps::ast::Struct & );
-        
+        template<typename T> void evse_prolog(T& r, ceps::ast::Struct & msg);
 
         public:
 
         std::uint8_t* build(ceps::ast::node_t data);
+
     };
 
     template<> iso2EVSEStatusType MessageBuilder::emit<iso2EVSEStatusType>(ceps::ast::Struct & msg);
@@ -183,45 +185,43 @@ namespace ceps2openv2g{
         return it->second;
     }
 
+    template <typename T> optional<T> get_numerical_field(ceps::ast::Struct& msg){
+        if (children(msg).size() != 1) return {};
+        auto elem = children(msg)[0];
+        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
+            return value(as_int_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
+            return value(as_int64_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
+            return value(as_double_ref(elem));
+        return {};    
+    }
     
-    
-    optional<uint16_t> get_uint16_field(ceps::ast::Struct& msg){
+    optional<string> get_string_field(ceps::ast::Struct& msg){
         if (children(msg).size() != 1) return {};
         auto elem = children(msg)[0];
-        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
-            return value(as_int_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
-            return value(as_int64_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
-            return value(as_double_ref(elem));
+        if (is<ceps::ast::Ast_node_kind::string_literal>(elem))
+            return value(as_string_ref(elem));
         return {};    
     }
 
-
-    optional<uint64_t> get_int64_field(ceps::ast::Struct& msg){
-        if (children(msg).size() != 1) return {};
-        auto elem = children(msg)[0];
-        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
-            return value(as_int_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
-            return value(as_int64_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
-            return value(as_double_ref(elem));
-        return {};    
+    template <typename T> void MessageBuilder::evse_prolog(T& r, ceps::ast::Struct & msg){
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ResponseCode");
+            if (match_res) {
+               auto code = get_v2g_responsecode(ceps::ast::as_struct_ref(e));
+               if (!code) return;
+               r.ResponseCode = *code;
+               return;               
+            }
+            match_res = match_struct(e,"EVSEStatus");
+            if (match_res) {
+                r.EVSEStatus_isUsed = 1;
+                r.EVSEStatus = emit<iso2EVSEStatusType>(ceps::ast::as_struct_ref(e));
+                return;
+            }
+        });
     }
-
-    optional<int32_t> get_int32_field(ceps::ast::Struct& msg){
-        if (children(msg).size() != 1) return {};
-        auto elem = children(msg)[0];
-        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
-            return value(as_int_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
-            return value(as_int64_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
-            return value(as_double_ref(elem));
-        return {};    
-    }
-
 
     //
     // SessionSetupReqType
@@ -245,23 +245,11 @@ namespace ceps2openv2g{
 
     template<> iso2SessionSetupResType MessageBuilder::emit<iso2SessionSetupResType>(ceps::ast::Struct & msg){
         iso2SessionSetupResType r{};
-        for_all_children(msg, [&](node_t e){
-            auto match_res = match_struct(e,"ResponseCode");
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVSETimeStamp");
             if (match_res) {
-               auto code = get_v2g_responsecode(ceps::ast::as_struct_ref(e));
-               if (!code) return;
-               r.ResponseCode = *code;
-               return;               
-            }
-            match_res = match_struct(e,"EVSEStatus");
-            if (match_res) {
-                r.EVSEStatus_isUsed = 1;
-                r.EVSEStatus = emit<iso2EVSEStatusType>(ceps::ast::as_struct_ref(e));
-                return;
-            }
-            match_res = match_struct(e,"EVSETimeStamp");
-            if (match_res) {
-                auto field_value = get_int64_field(as_struct_ref(e));
+                auto field_value = get_numerical_field<int64_t>(as_struct_ref(e));
                 if (!field_value) return;
                 r.EVSETimeStamp_isUsed = 1;
                 r.EVSETimeStamp = *field_value;
@@ -281,7 +269,7 @@ namespace ceps2openv2g{
         for_all_children(msg, [&](node_t e){
             auto match_res = match_struct(e,"NotificationMaxDelay");
             if (match_res) {
-                auto field_value = get_uint16_field(as_struct_ref(e));
+                auto field_value = get_numerical_field<uint16_t>(as_struct_ref(e));
                 if (!field_value) return;
                 r.NotificationMaxDelay = *field_value;
                 return;
@@ -327,14 +315,14 @@ namespace ceps2openv2g{
         for_all_children(msg, [&](node_t e){
             auto match_res = match_struct(e,"ServiceID");
             if (match_res) {
-                auto field = get_uint16_field(as_struct_ref(e));
+                auto field = get_numerical_field<uint16_t>(as_struct_ref(e));
                 if (!field) return;
                 r.ServiceID = *field;
                 return;
             }
             match_res = match_struct(e,"FreeService");
             if (match_res) {
-                auto field = get_int32_field(as_struct_ref(e));
+                auto field = get_numerical_field<int32_t>(as_struct_ref(e));
                 if (!field) return;
                 r.FreeService = *field;
                 return;
@@ -362,6 +350,8 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+
     //
     // iso2ServiceDiscoveryResType
     //
@@ -369,21 +359,10 @@ namespace ceps2openv2g{
     template<> iso2ServiceDiscoveryResType MessageBuilder::emit<iso2ServiceDiscoveryResType>(ceps::ast::Struct & msg){
         iso2ServiceDiscoveryResType r{};
 
+        evse_prolog(r,msg);
+
         for_all_children(msg, [&](node_t e){
-            auto match_res = match_struct(e,"ResponseCode");
-            if (match_res) {
-               auto code = get_v2g_responsecode(ceps::ast::as_struct_ref(e));
-               if (!code) return;
-               r.ResponseCode = *code;
-               return;               
-            }
-            match_res = match_struct(e,"EVSEStatus");
-            if (match_res) {
-                r.EVSEStatus_isUsed = 1;
-                r.EVSEStatus = emit<iso2EVSEStatusType>(ceps::ast::as_struct_ref(e));
-                return;
-            }
-            match_res = match_struct(e,"PaymentOptionList");
+            auto match_res = match_struct(e,"PaymentOptionList");
             if (match_res) {
 
                 auto n = write_bytes(   as_struct_ptr(e),
@@ -418,7 +397,7 @@ namespace ceps2openv2g{
         for_all_children(msg, [&](node_t e){
             auto match_res = match_struct(e,"ServiceID");
             if (match_res) {
-                auto field = get_uint16_field(as_struct_ref(e));
+                auto field = get_numerical_field<uint16_t>(as_struct_ref(e));
                 if (!field) return;
                 r.ServiceID = *field;
                 return;
@@ -427,6 +406,120 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+    //
+    // iso2PhysicalValueType
+    //
+
+    template<> iso2PhysicalValueType MessageBuilder::emit<iso2PhysicalValueType>(ceps::ast::Struct & msg){
+        iso2PhysicalValueType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"Exponent");
+            if (match_res) {
+                auto field = get_numerical_field<uint8_t>(as_struct_ref(e));
+                if (!field) return;
+                r.Exponent = *field;
+                return;
+            }
+            match_res = match_struct(e,"Value");
+            if (match_res) {
+                auto field = get_numerical_field<uint16_t>(as_struct_ref(e));
+                if (!field) return;
+                r.Value = *field;
+                return;
+            }
+        });
+        return r;
+    }
+
+
+    //
+    // iso2ParameterType
+    //
+
+    template<> iso2ParameterType MessageBuilder::emit<iso2ParameterType>(ceps::ast::Struct & msg){
+        iso2ParameterType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"Name");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.Name.characters,field_value->c_str(), sizeof(r.Name.characters - 1)); 
+                return;
+            }
+            match_res = match_struct(e,"boolValue");
+            if (match_res) {
+                auto field_value = get_numerical_field<int32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.boolValue = *field_value;
+                r.boolValue_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"byteValue");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.byteValue = *field_value;
+                r.byteValue_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"shortValue");
+            if (match_res) {
+                auto field_value = get_numerical_field<int16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.shortValue = *field_value;
+                r.shortValue_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"intValue");
+            if (match_res) {
+                auto field_value = get_numerical_field<int32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.intValue = *field_value;
+                r.intValue_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"physicalValue");
+            if (match_res) {
+                auto field_value = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.physicalValue = field_value;
+                r.physicalValue_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"stringValue");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.stringValue.characters, field_value->c_str(), sizeof(r.stringValue.characters));
+                r.stringValue.charactersLen = field_value->length();
+                r.stringValue_isUsed = 1;
+                return;
+            }
+
+        });
+        return r;
+    }
+
+    
+
+    //
+    // iso2ServiceDetailResType
+    //
+
+    template<> iso2ServiceDetailResType MessageBuilder::emit<iso2ServiceDetailResType>(ceps::ast::Struct & msg){
+        iso2ServiceDetailResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ServciceID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.ServiceID = *field_value;
+                return;
+            }
+        });
+        return r;
+    }
 
     //
     // MessageBuilder::build
@@ -445,6 +538,9 @@ namespace ceps2openv2g{
          emit<iso2ServiceDiscoveryResType>(ceps_struct); 
         else if(name(ceps_struct)== "ServiceDetailReq")
          emit<iso2ServiceDetailReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "ServiceDetailRes")
+         emit<iso2ServiceDetailResType>(ceps_struct); 
+
         return nullptr;
     }
 }

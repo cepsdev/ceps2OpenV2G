@@ -111,7 +111,18 @@ v2g(
 	}
 );
 
-
+v2g(
+	ServiceDetailRes{
+		 ResponseCode{
+			 FAILED_ContactorError;
+		 };
+		EVSEStatus{
+			NotificationMaxDelay{13;};
+			EVSENotification{ReNegotiation;};
+		};
+		ServiceID{123;};
+	}
+);
 
 
 
