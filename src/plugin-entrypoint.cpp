@@ -408,6 +408,30 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+    //
+    // iso2ServiceDetailReqType
+    //
+
+    template<> iso2ServiceDetailReqType MessageBuilder::emit<iso2ServiceDetailReqType>(ceps::ast::Struct & msg){
+        iso2ServiceDetailReqType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ServiceID");
+            if (match_res) {
+                auto field = get_uint16_field(as_struct_ref(e));
+                if (!field) return;
+                r.ServiceID = *field;
+                return;
+            }
+        });
+        return r;
+    }
+
+
+    //
+    // MessageBuilder::build
+    //
+
     std::uint8_t* MessageBuilder::build(ceps::ast::node_t data){
         if (!is<Ast_node_kind::structdef>(data)) return {};
         auto& ceps_struct = *as_struct_ptr(data);
@@ -419,7 +443,8 @@ namespace ceps2openv2g{
          emit<iso2ServiceDiscoveryReqType>(ceps_struct); 
         else if(name(ceps_struct)== "ServiceDiscoveryRes")
          emit<iso2ServiceDiscoveryResType>(ceps_struct); 
-
+        else if(name(ceps_struct)== "ServiceDetailReq")
+         emit<iso2ServiceDetailReqType>(ceps_struct); 
         return nullptr;
     }
 }

@@ -105,6 +105,12 @@ v2g(
 	}
 );
 
+v2g(
+	ServiceDetailReq{
+		ServiceID{123;};
+	}
+);
+
 
 
 
