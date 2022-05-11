@@ -1,6 +1,7 @@
 
 kind v2gResponsCodeType;
 kind v2gEVSENotificationType;
+kind v2gpaymentOptionType;
 
 v2gResponsCodeType 	OK,
 					OK_NewSessionEstablished,
@@ -34,6 +35,7 @@ v2gResponsCodeType 	OK,
 					FAILED_CertificateNotYetValid;
 
 v2gEVSENotificationType StopCharging, ReNegotiation;
+v2gpaymentOptionType Contract, ExternalPayment;
 
 v2g(
 	SessionSetupReq{
@@ -61,6 +63,68 @@ v2g(
 		};
 	}
 );
+
+
+v2g(
+	ServiceDiscoveryReq{
+		 SupportedServiceIDs{
+			 1;2;3;4;
+		 };
+	}
+);
+
+v2g(
+	ServiceDiscoveryRes{
+		 ResponseCode{
+			 FAILED_ContactorError;
+		 };
+		EVSEStatus{
+			NotificationMaxDelay{13;};
+			EVSENotification{ReNegotiation;};
+		};
+		PaymentOptionList{
+			Contract;
+			ExternalPayment;
+		};
+		EnergyTransferServiceList{
+			Service{
+				ServiceID{1;};
+				FreeService{2;};
+			};
+			Service{
+				ServiceID{3;};
+				FreeService{4;};
+			};
+		};
+		VASList{
+			Service{
+				ServiceID{5;};
+				FreeService{6;};
+			};
+		};
+	}
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //print ("result = ",root.result.content(),"\n\n");

@@ -54,6 +54,27 @@ size_t write_bytes(ceps::ast::Struct_ptr strct, Iter beg, Iter end){
 }
 
 
+size_t write_bytes(ceps::ast::Struct_ptr strct, iso2paymentOptionType* beg, iso2paymentOptionType* end){
+  using namespace ceps::ast;
+  using namespace std;
+  auto sit = strct->children().begin();
+  size_t written = 0;
+  for(auto it = beg; it != end && sit != strct->children().end();++sit){
+    if (is<ceps::ast::Ast_node_kind::symbol>(*sit) && kind(as_symbol_ref(*sit)) == "v2gpaymentOptionType" ){
+        map<string,iso2paymentOptionType> str2enum { 
+            {"Contract",iso2paymentOptionType_Contract},
+            {"ExternalPayment",iso2paymentOptionType_ExternalPayment}
+        };
+        auto fit = str2enum.find(name(as_symbol_ref(*sit)));
+        if (fit == str2enum.end()) continue;
+        *it = fit->second;
+        ++it;
+        ++written;
+    }
+  }
+  return written;
+}
+
 namespace ceps2openv2g{
     using namespace std;
     using namespace ceps::ast;
@@ -77,6 +98,12 @@ namespace ceps2openv2g{
     template<> iso2EVSEStatusType MessageBuilder::emit<iso2EVSEStatusType>(ceps::ast::Struct & msg);
     template<> iso2SessionSetupReqType MessageBuilder::emit<iso2SessionSetupReqType>(ceps::ast::Struct & msg);
     template<> iso2SessionSetupResType MessageBuilder::emit<iso2SessionSetupResType>(ceps::ast::Struct & msg);
+    template<> iso2SessionSetupReqType MessageBuilder::emit<iso2SessionSetupReqType>(ceps::ast::Struct & msg);
+    template<> iso2SessionSetupResType MessageBuilder::emit<iso2SessionSetupResType>(ceps::ast::Struct & msg);
+    template<> iso2ServiceListType MessageBuilder::emit<iso2ServiceListType>(ceps::ast::Struct & msg);
+
+    
+
 
     template <typename F> void for_all_children(ceps::ast::Struct & s, F f){
         for (auto e : children(s)){
@@ -170,6 +197,36 @@ namespace ceps2openv2g{
         return {};    
     }
 
+
+    optional<uint64_t> get_int64_field(ceps::ast::Struct& msg){
+        if (children(msg).size() != 1) return {};
+        auto elem = children(msg)[0];
+        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
+            return value(as_int_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
+            return value(as_int64_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
+            return value(as_double_ref(elem));
+        return {};    
+    }
+
+    optional<int32_t> get_int32_field(ceps::ast::Struct& msg){
+        if (children(msg).size() != 1) return {};
+        auto elem = children(msg)[0];
+        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
+            return value(as_int_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
+            return value(as_int64_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
+            return value(as_double_ref(elem));
+        return {};    
+    }
+
+
+    //
+    // SessionSetupReqType
+    //
+
     template<> iso2SessionSetupReqType MessageBuilder::emit<iso2SessionSetupReqType>(ceps::ast::Struct & msg){
         iso2SessionSetupReqType r{};
         for_all_children(msg, [&](node_t e){
@@ -181,6 +238,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+
+    //
+    // SessionSetupResType
+    //
 
     template<> iso2SessionSetupResType MessageBuilder::emit<iso2SessionSetupResType>(ceps::ast::Struct & msg){
         iso2SessionSetupResType r{};
@@ -197,10 +258,22 @@ namespace ceps2openv2g{
                 r.EVSEStatus_isUsed = 1;
                 r.EVSEStatus = emit<iso2EVSEStatusType>(ceps::ast::as_struct_ref(e));
                 return;
+            }
+            match_res = match_struct(e,"EVSETimeStamp");
+            if (match_res) {
+                auto field_value = get_int64_field(as_struct_ref(e));
+                if (!field_value) return;
+                r.EVSETimeStamp_isUsed = 1;
+                r.EVSETimeStamp = *field_value;
+                return;
             }  
         });
         return r;
     }
+
+    //
+    //EVSEStatusType
+    //
 
     template<> iso2EVSEStatusType MessageBuilder::emit<iso2EVSEStatusType>(ceps::ast::Struct & msg){
         iso2EVSEStatusType r{};
@@ -223,6 +296,118 @@ namespace ceps2openv2g{
         });
         return r;
     }
+
+    //
+    //ServiceDiscoveryReq
+    //
+
+    template<> iso2ServiceDiscoveryReqType MessageBuilder::emit<iso2ServiceDiscoveryReqType>(ceps::ast::Struct & msg){
+        iso2ServiceDiscoveryReqType r{};
+
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"SupportedServiceIDs");
+            if (match_res) {
+                auto n = write_bytes(   as_struct_ptr(e),
+                                        r.SupportedServiceIDs.ServiceID.array, 
+                                        r.SupportedServiceIDs.ServiceID.array + sizeof(r.SupportedServiceIDs.ServiceID.array));
+                r.SupportedServiceIDs.ServiceID.arrayLen = n;
+                r.SupportedServiceIDs_isUsed = (n != 0) ? 1 : 0;
+            }
+        });
+        return r;
+    }
+
+    //
+    // iso2ServiceType
+    //
+    
+
+    template<> iso2ServiceType MessageBuilder::emit<iso2ServiceType>(ceps::ast::Struct & msg){
+        iso2ServiceType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ServiceID");
+            if (match_res) {
+                auto field = get_uint16_field(as_struct_ref(e));
+                if (!field) return;
+                r.ServiceID = *field;
+                return;
+            }
+            match_res = match_struct(e,"FreeService");
+            if (match_res) {
+                auto field = get_int32_field(as_struct_ref(e));
+                if (!field) return;
+                r.FreeService = *field;
+                return;
+            }
+        });
+        return r;
+    }
+
+
+    //
+    // iso2ServiceListType
+    //
+    
+    template<> iso2ServiceListType MessageBuilder::emit<iso2ServiceListType>(ceps::ast::Struct & msg){
+        iso2ServiceListType r{};
+        auto it = r.Service.array;
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"Service");
+            if (match_res) {
+                auto field = emit<iso2ServiceType>(as_struct_ref(e));
+                *it++ = field;                
+            }
+        });
+        r.Service.arrayLen = it - r.Service.array; 
+        return r;
+    }
+
+    //
+    // iso2ServiceDiscoveryResType
+    //
+
+    template<> iso2ServiceDiscoveryResType MessageBuilder::emit<iso2ServiceDiscoveryResType>(ceps::ast::Struct & msg){
+        iso2ServiceDiscoveryResType r{};
+
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ResponseCode");
+            if (match_res) {
+               auto code = get_v2g_responsecode(ceps::ast::as_struct_ref(e));
+               if (!code) return;
+               r.ResponseCode = *code;
+               return;               
+            }
+            match_res = match_struct(e,"EVSEStatus");
+            if (match_res) {
+                r.EVSEStatus_isUsed = 1;
+                r.EVSEStatus = emit<iso2EVSEStatusType>(ceps::ast::as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"PaymentOptionList");
+            if (match_res) {
+
+                auto n = write_bytes(   as_struct_ptr(e),
+                                        r.PaymentOptionList.PaymentOption.array, 
+                                        r.PaymentOptionList.PaymentOption.array + 
+                                            sizeof(r.PaymentOptionList.PaymentOption.array));
+                r.PaymentOptionList.PaymentOption.arrayLen = n;
+                return;
+            }
+            match_res = match_struct(e,"EnergyTransferServiceList");
+            if (match_res) {
+                r.EnergyTransferServiceList = emit<iso2ServiceListType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"VASList");
+            if (match_res) {
+                r.VASList = emit<iso2ServiceListType>(as_struct_ref(e));
+                r.VASList_isUsed = 1;
+                return;
+            }
+        });
+        return r;
+    }
+
     std::uint8_t* MessageBuilder::build(ceps::ast::node_t data){
         if (!is<Ast_node_kind::structdef>(data)) return {};
         auto& ceps_struct = *as_struct_ptr(data);
@@ -230,10 +415,22 @@ namespace ceps2openv2g{
             emit<iso2SessionSetupReqType>(ceps_struct);
         else if (name(ceps_struct)== "SessionSetupRes") 
             emit<iso2SessionSetupResType>(ceps_struct);
+        else if(name(ceps_struct)== "ServiceDiscoveryReq")
+         emit<iso2ServiceDiscoveryReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "ServiceDiscoveryRes")
+         emit<iso2ServiceDiscoveryResType>(ceps_struct); 
 
         return nullptr;
     }
 }
+
+
+
+
+
+//
+// Plugin specific code
+//
 
 ceps::ast::node_t ceps2openv2g::plugin_entrypoint(ceps::ast::node_callparameters_t params){
     using namespace std;
