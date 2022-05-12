@@ -205,6 +205,30 @@ v2g(
 );
 
 
+v2g(
+	PaymentDetailsReq{
+		eMAID{
+			"57575757757";
+		};
+		ContractSignatureCertChain{
+			Id{
+				"asdfasdfghjklöä";
+			};
+			Certificate{
+               1;2;3;"jljljljljljljlkl";
+			};
+			SubCertificates{
+				Certificate{
+               		3;2;3;"jljljljljljljlkl";
+				};
+				Certificate{
+               		2;2;3;"jljljljljljljlkl";
+				};
+
+			};
+		};
+	}
+);
 
 
 

@@ -506,7 +506,8 @@ namespace ceps2openv2g{
             auto match_res = match_struct(e,name);
             if (match_res && (it != it_end) ) {
                 auto field = emit< T0 >(as_struct_ref(e));
-                *it++ = field;
+                *it = field;
+                ++it;
                 return;
             }
         });
@@ -658,8 +659,77 @@ namespace ceps2openv2g{
         evse_prolog(r,msg);        
         return r;
     }
-    
 
+    struct cert_t {
+		uint8_t bytes[iso2SubCertificatesType_Certificate_BYTES_SIZE];
+		uint16_t bytesLen;
+	};
+
+    struct certs_t{
+		cert_t  array[iso2SubCertificatesType_Certificate_ARRAY_SIZE];
+		uint16_t arrayLen;
+	};
+
+    template<> cert_t MessageBuilder::emit<cert_t>(ceps::ast::Struct & msg){
+        cert_t r{};
+        r.bytesLen = write_bytes(&msg,r.bytes, r.bytes + sizeof(r.bytes));
+        return r;
+    }
+
+    //
+    // ContractSignatureCertChain
+    //
+
+    template<> iso2CertificateChainType MessageBuilder::emit<iso2CertificateChainType>(ceps::ast::Struct & msg){
+        iso2CertificateChainType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"Id");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.Id.characters,field_value->c_str(), sizeof(r.Id.characters - 1)); 
+                r.Id.charactersLen = field_value->length();
+                r.Id_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"Certificate");
+            if (match_res) {
+                r.Certificate.bytesLen = write_bytes(as_struct_ptr(e),r.Certificate.bytes, r.Certificate.bytes + sizeof(r.Certificate.bytes));
+                return;
+            }
+            match_res = match_struct(e,"SubCertificates");
+            if (match_res) {
+                r.SubCertificates.Certificate.arrayLen = 
+                 read_array<cert_t>(as_struct_ref(e), (certs_t&)r.SubCertificates.Certificate, string{"Certificate"});
+                return;
+            }            
+        });
+        return r;
+    }
+
+    //
+    // iso2PaymentDetailsReqType
+    //
+    
+    template<> iso2PaymentDetailsReqType MessageBuilder::emit<iso2PaymentDetailsReqType>(ceps::ast::Struct & msg){
+        iso2PaymentDetailsReqType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"eMAID");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.eMAID.characters,field_value->c_str(), sizeof(r.eMAID.characters - 1)); 
+                r.eMAID.charactersLen = field_value->length();
+                return;
+            }
+            match_res = match_struct(e,"ContractSignatureCertChain");
+            if (match_res) {
+                r.ContractSignatureCertChain = emit<iso2CertificateChainType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;
+    }
 
     //
     // MessageBuilder::build
@@ -684,6 +754,10 @@ namespace ceps2openv2g{
          emit<iso2PaymentServiceSelectionReqType>(ceps_struct); 
         else if(name(ceps_struct)== "PaymentServiceSelectionRes")
          emit<iso2PaymentServiceSelectionResType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentDetailsReq")
+         emit<iso2PaymentDetailsReqType>(ceps_struct); 
+
+         
 
 
     
@@ -706,12 +780,12 @@ ceps::ast::node_t ceps2openv2g::plugin_entrypoint(ceps::ast::node_callparameters
     auto& ceps_struct = *as_struct_ptr(data);
     MessageBuilder msg_builder;
     msg_builder.build(data);
-    cout << "generator::plugin_entrypoint:\n";
+    //cout << "generator::plugin_entrypoint:\n";
 
-    for(auto e : children(ceps_struct)){
-        cout <<"\t"<< * e << "\n";
-    }
-    cout <<"\n\n";
+   // for(auto e : children(ceps_struct)){
+   //     cout <<"\t"<< * e << "\n";
+   // }
+   // cout <<"\n\n";
     auto result = mk_struct("result");
     children(*result).push_back(mk_int_node(42));
     return result;
