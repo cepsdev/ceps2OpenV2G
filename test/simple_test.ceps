@@ -121,6 +121,51 @@ v2g(
 			EVSENotification{ReNegotiation;};
 		};
 		ServiceID{123;};
+		ServiceParameterList{
+			ParameterSet{
+				ParameterSetID{
+					1;
+				};
+				Parameter{
+					Name{"NameP1_1";};
+					boolValue{1;};
+				};
+				Parameter{
+					Name{"NameP1_2";};
+					byteValue{2;};
+				};
+				Parameter{
+					Name{"NameP1_3";};
+					shortValue{3;};
+				};
+				Parameter{
+					Name{"NameP1_4";};
+					shortValue{4;};
+				};
+			};
+			ParameterSet{
+				ParameterSetID{
+					2;
+				};
+				Parameter{
+					Name{"NameP2_1";};
+					IntValue{4;};
+				};
+				Parameter{
+					Name{"NameP2_2";};
+					physicalValue{
+						Exponent {1;};
+						Value{2;};
+					};
+				};
+				Parameter{
+					Name{"NameP2_3";};
+					stringValue{
+						"gaga";
+					};
+				};
+			};
+		};
 	}
 );
 

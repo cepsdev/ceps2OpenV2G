@@ -90,7 +90,9 @@ namespace ceps2openv2g{
 
         template<typename T> T emit(ceps::ast::Struct & );
         template<typename T> void evse_prolog(T& r, ceps::ast::Struct & msg);
-
+        template <typename T0, typename T1> size_t read_array(  ceps::ast::Struct & msg,
+                                                             T1& r, 
+                                                             string name);
         public:
 
         std::uint8_t* build(ceps::ast::node_t data);
@@ -338,18 +340,9 @@ namespace ceps2openv2g{
     
     template<> iso2ServiceListType MessageBuilder::emit<iso2ServiceListType>(ceps::ast::Struct & msg){
         iso2ServiceListType r{};
-        auto it = r.Service.array;
-        for_all_children(msg, [&](node_t e){
-            auto match_res = match_struct(e,"Service");
-            if (match_res) {
-                auto field = emit<iso2ServiceType>(as_struct_ref(e));
-                *it++ = field;                
-            }
-        });
-        r.Service.arrayLen = it - r.Service.array; 
+        r.Service.arrayLen = read_array<iso2ServiceType>(msg, r.Service, string{"Service"});
         return r;
     }
-
 
 
     //
@@ -495,12 +488,56 @@ namespace ceps2openv2g{
                 r.stringValue_isUsed = 1;
                 return;
             }
-
         });
         return r;
     }
 
-    
+    //
+    // iso2ParameterSetType
+    //
+
+    template <typename T0, typename T1> size_t MessageBuilder::read_array(  ceps::ast::Struct & msg,
+                                                             T1& r, 
+                                                             string name) {
+        auto it = r.array;
+        auto it_begin = it;
+        auto it_end = r.array + sizeof(r.array);
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,name);
+            if (match_res && (it != it_end) ) {
+                auto field = emit< T0 >(as_struct_ref(e));
+                *it++ = field;
+                return;
+            }
+        });
+        return it - it_begin;
+    }
+
+    template<> iso2ParameterSetType MessageBuilder::emit<iso2ParameterSetType>(ceps::ast::Struct & msg){
+        iso2ParameterSetType r{};
+        r.Parameter.arrayLen = read_array<iso2ParameterType>(msg, r.Parameter, string{"Parameter"});
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ParameterSetID");
+            if (match_res) {
+                auto field_value = get_numerical_field<int16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.ParameterSetID = *field_value;
+                return;
+            }            
+        });
+        return r;
+    }    
+
+
+    //
+    // iso2ServiceParameterListType
+    //
+
+    template<> iso2ServiceParameterListType MessageBuilder::emit<iso2ServiceParameterListType>(ceps::ast::Struct & msg){
+        iso2ServiceParameterListType r{};
+        r.ParameterSet.arrayLen = read_array<iso2ParameterSetType>(msg, r.ParameterSet, string{"ParameterSet"});
+        return r;
+    }    
 
     //
     // iso2ServiceDetailResType
@@ -517,6 +554,12 @@ namespace ceps2openv2g{
                 r.ServiceID = *field_value;
                 return;
             }
+            match_res = match_struct(e,"ServiceParameterList");
+            if (match_res) {
+                auto field_value = emit<iso2ServiceParameterListType>(as_struct_ref(e));
+                r.ServiceParameterList = field_value;
+                return;
+            }//
         });
         return r;
     }
