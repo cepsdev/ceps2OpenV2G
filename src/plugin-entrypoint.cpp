@@ -558,6 +558,7 @@ namespace ceps2openv2g{
             if (match_res) {
                 auto field_value = emit<iso2ServiceParameterListType>(as_struct_ref(e));
                 r.ServiceParameterList = field_value;
+                r.ServiceParameterList_isUsed = 1;
                 return;
             }//
         });
@@ -587,9 +588,6 @@ namespace ceps2openv2g{
         return nullptr;
     }
 }
-
-
-
 
 
 //
