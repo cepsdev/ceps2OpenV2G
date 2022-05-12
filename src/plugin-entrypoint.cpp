@@ -585,6 +585,42 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+    //
+    // iso2SelectedServiceType
+    //
+
+    template<> iso2SelectedServiceType MessageBuilder::emit<iso2SelectedServiceType>(ceps::ast::Struct & msg){
+        iso2SelectedServiceType r{};
+        for_all_children(msg, [&] (node_t e){
+            auto match_res = match_struct(e,"ServciceID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.ServiceID = *field_value;
+                return;
+            }
+            match_res = match_struct(e,"ParameterSetID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.ParameterSetID = *field_value;
+                return;
+            }            
+        });
+        return r;
+    }
+
+    //
+    // iso2SelectedServiceListType
+    //
+
+    template<> iso2SelectedServiceListType MessageBuilder::emit<iso2SelectedServiceListType>(ceps::ast::Struct & msg){
+        iso2SelectedServiceListType r{};
+        r.SelectedService.arrayLen = read_array<iso2SelectedServiceType>(msg, r.SelectedService, string{"SelectedService"});
+        return r;
+    }    
+
     //
     // iso2PaymentServiceSelectionReqType
     //
@@ -599,17 +635,20 @@ namespace ceps2openv2g{
             }
             match_res = match_struct(e,"SelectedEnergyTransferService");
             if (match_res) {
+                r.SelectedEnergyTransferService = emit<iso2SelectedServiceType>(as_struct_ref(e));
                 return;
             }
             match_res = match_struct(e,"SelectedVASList");
             if (match_res) {
+                r.SelectedVASList = emit<iso2SelectedServiceListType>(as_struct_ref(e));
                 r.SelectedVASList_isUsed = 1;
                 return;
             }
-
         });
         return r;
     }
+
+
     //
     // MessageBuilder::build
     //

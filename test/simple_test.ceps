@@ -176,10 +176,17 @@ v2g(
 			Contract;
 		};
 		SelectedEnergyTransferService{
-
+			SelectedService{
+				ServciceID{121;};ParameterSetID{11;};
+			};
+			SelectedService{
+				ServciceID{122;};ParameterSetID{12;};
+			};
 		};
 		SelectedVASList{
-
+			SelectedService{
+				ServciceID{12;};ParameterSetID{1;};
+			};
 		};
 	}
 );
