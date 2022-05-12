@@ -170,7 +170,19 @@ v2g(
 );
 
 
+v2g(
+	PaymentServiceSelectionReq{
+		SelectedPaymentOption{
+			Contract;
+		};
+		SelectedEnergyTransferService{
 
+		};
+		SelectedVASList{
+
+		};
+	}
+);
 
 
 

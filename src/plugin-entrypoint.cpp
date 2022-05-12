@@ -566,6 +566,51 @@ namespace ceps2openv2g{
     }
 
     //
+    // iso2paymentOptionType
+    //
+
+    template<> iso2paymentOptionType MessageBuilder::emit<iso2paymentOptionType>(ceps::ast::Struct & msg){
+        iso2paymentOptionType r{};
+        map<string,iso2paymentOptionType> str2enum { 
+            {"Contract",iso2paymentOptionType_Contract},
+            {"ExternalPayment",iso2paymentOptionType_ExternalPayment}
+        };
+        for_all_children(msg, [&] (node_t e){
+            if (is<ceps::ast::Ast_node_kind::symbol>(e) && kind(as_symbol_ref(e)) == "v2gpaymentOptionType" ){
+                auto fit = str2enum.find(name(as_symbol_ref(e)));
+                if (fit == str2enum.end()) return;
+                r = fit->second;
+            }
+        });
+        return r;
+    }
+
+    //
+    // iso2PaymentServiceSelectionReqType
+    //
+    
+    template<> iso2PaymentServiceSelectionReqType MessageBuilder::emit<iso2PaymentServiceSelectionReqType>(ceps::ast::Struct & msg){
+        iso2PaymentServiceSelectionReqType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"SelectedPaymentOption");
+            if (match_res) {
+                r.SelectedPaymentOption = emit<iso2paymentOptionType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"SelectedEnergyTransferService");
+            if (match_res) {
+                return;
+            }
+            match_res = match_struct(e,"SelectedVASList");
+            if (match_res) {
+                r.SelectedVASList_isUsed = 1;
+                return;
+            }
+
+        });
+        return r;
+    }
+    //
     // MessageBuilder::build
     //
 
@@ -584,6 +629,10 @@ namespace ceps2openv2g{
          emit<iso2ServiceDetailReqType>(ceps_struct); 
         else if(name(ceps_struct)== "ServiceDetailRes")
          emit<iso2ServiceDetailResType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentServiceSelectionReq")
+         emit<iso2PaymentServiceSelectionReqType>(ceps_struct); 
+
+         
 
         return nullptr;
     }
