@@ -650,6 +650,18 @@ namespace ceps2openv2g{
 
 
     //
+    // iso2PaymentServiceSelectionResType
+    //
+    
+    template<> iso2PaymentServiceSelectionResType MessageBuilder::emit<iso2PaymentServiceSelectionResType>(ceps::ast::Struct & msg){
+        iso2PaymentServiceSelectionResType r{};
+        evse_prolog(r,msg);        
+        return r;
+    }
+    
+
+
+    //
     // MessageBuilder::build
     //
 
@@ -670,9 +682,11 @@ namespace ceps2openv2g{
          emit<iso2ServiceDetailResType>(ceps_struct); 
         else if(name(ceps_struct)== "PaymentServiceSelectionReq")
          emit<iso2PaymentServiceSelectionReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentServiceSelectionRes")
+         emit<iso2PaymentServiceSelectionResType>(ceps_struct); 
 
-         
 
+    
         return nullptr;
     }
 }
