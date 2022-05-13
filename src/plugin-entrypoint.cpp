@@ -1862,7 +1862,142 @@ namespace ceps2openv2g{
             }
         });
         return r;
-    }   
+    }
+
+    //
+    // iso2DisplayParametersType
+    //
+
+    template<> iso2DisplayParametersType MessageBuilder::emit<iso2DisplayParametersType>(ceps::ast::Struct & msg){
+        iso2DisplayParametersType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"CurrentRange");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.CurrentRange = *field_value;
+                r.CurrentRange_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"CurrentSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.CurrentSOC = *field_value;
+                r.CurrentSOC_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"TargetSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.TargetSOC = *field_value;
+                r.TargetSOC_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"BulkSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.BulkSOC = *field_value;
+                r.BulkSOC_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"MinimumSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.MinimumSOC = *field_value;
+                r.MinimumSOC_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"ChargingPerformance");
+            if (match_res) {
+                r.ChargingPerformance = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.ChargingPerformance_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"RemainingTimeToTargetSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.RemainingTimeToTargetSOC = *field_value;
+                r.RemainingTimeToTargetSOC_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"RemainingTimeToBulkSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.RemainingTimeToBulkSOC = *field_value;
+                r.RemainingTimeToBulkSOC_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"RemainingTimeToMinimumSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.RemainingTimeToMinimumSOC = *field_value;
+                r.RemainingTimeToMinimumSOC_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"ChargingComplete");
+            if (match_res) {
+                auto field_value = get_numerical_field<int>(as_struct_ref(e));
+                if (!field_value) return;
+                r.ChargingComplete = *field_value;
+                r.ChargingComplete_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"BulkChargingComplete");
+            if (match_res) {
+                auto field_value = get_numerical_field<int>(as_struct_ref(e));
+                if (!field_value) return;
+                r.BulkChargingComplete = *field_value;
+                r.BulkChargingComplete_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"InletHot");
+            if (match_res) {
+                auto field_value = get_numerical_field<int>(as_struct_ref(e));
+                if (!field_value) return;
+                r.InletHot = *field_value;
+                r.InletHot_isUsed = 1;
+                return;
+            }            
+        });
+        return r;
+    }
+
+
+    //
+    // iso2CurrentDemandReqType
+    //
+
+    template<> iso2CurrentDemandReqType MessageBuilder::emit<iso2CurrentDemandReqType>(ceps::ast::Struct & msg){
+        iso2CurrentDemandReqType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVTargetEnergyRequest");
+            if (match_res) {
+                r.EVTargetEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumEnergyRequest");
+            if (match_res) {
+                r.EVMaximumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumEnergyRequest_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumEnergyRequest");
+            if (match_res) {
+                r.EVMinimumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMinimumEnergyRequest_isUsed = 1;
+                return;
+            }
+
+        });
+        return r;
+    }
 
     //
     // MessageBuilder::build
@@ -1911,7 +2046,10 @@ namespace ceps2openv2g{
          emit<iso2PreChargeReqType>(ceps_struct);
         else if(name(ceps_struct)== "PreChargeRes")
          emit<iso2PreChargeResType>(ceps_struct);
-
+        else if(name(ceps_struct)== "CurrentDemandReq")
+         emit<iso2CurrentDemandReqType>(ceps_struct);
+        else if(name(ceps_struct)== "CurrentDemandRes")
+         emit<iso2CurrentDemandResType>(ceps_struct);
         return nullptr;
     }
 }
