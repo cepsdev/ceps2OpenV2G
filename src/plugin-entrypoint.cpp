@@ -1197,6 +1197,51 @@ namespace ceps2openv2g{
     }
 
 
+    //
+    // iso2WPT_EVChargeParameterType
+    //
+
+    template<> iso2WPT_EVChargeParameterType MessageBuilder::emit<iso2WPT_EVChargeParameterType>(ceps::ast::Struct & msg){
+        iso2WPT_EVChargeParameterType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"DepartureTime");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.DepartureTime = *field_value;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumPower");
+            if (match_res) {
+                r.EVMaximumPower = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumPower");
+            if (match_res) {
+                r.EVMinimumPower = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVTargetEnergyRequest");
+            if (match_res) {
+                r.EVTargetEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVTargetEnergyRequest_isUsed=1;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumEnergyRequest");
+            if (match_res) {
+                r.EVMaximumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumEnergyRequest_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumEnergyRequest");
+            if (match_res) {
+                r.EVMinimumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMinimumEnergyRequest_isUsed = 1;
+                return;
+            }
+        });    
+        return r;
+    }
 
     //
     // iso2ChargeParameterDiscoveryReqType
@@ -1247,6 +1292,7 @@ namespace ceps2openv2g{
             match_res = match_struct(e,"WPT_EVChargeParameter");
             if (match_res) {
                 r.WPT_EVChargeParameter_isUsed = 1;
+                r.WPT_EVChargeParameter = emit<iso2WPT_EVChargeParameterType>(as_struct_ref(e));
                 return;
             }
             match_res = match_struct(e,"MinimumPMaxRequest");
