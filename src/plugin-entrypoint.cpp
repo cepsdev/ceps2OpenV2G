@@ -1666,7 +1666,6 @@ namespace ceps2openv2g{
                 r.AC_EVSEChargeParameter_isUsed = 1;
                 return;
             }
-
             match_res = match_struct(e,"AC_EVSEBidirectionalParameter");
             if (match_res) {
                 r.AC_EVSEBidirectionalParameter = emit<iso2AC_EVSEBidirectionalParameterType>(as_struct_ref(e));                
@@ -1695,6 +1694,93 @@ namespace ceps2openv2g{
         return r;
     }
 
+    //
+    // iso2chargeProgressType
+    //
+ 
+    template<> iso2chargeProgressType MessageBuilder::emit<iso2chargeProgressType>(ceps::ast::Struct & msg){
+        iso2chargeProgressType r{};
+        map<string,iso2chargeProgressType> str2enum { 
+            {"Start",iso2chargeProgressType_Start},
+            {"Stop",iso2chargeProgressType_Stop},
+            {"Renegotiate",iso2chargeProgressType_Renegotiate}
+        };
+        for_all_children(msg, [&] (node_t e){
+            if (is<ceps::ast::Ast_node_kind::symbol>(e) && kind(as_symbol_ref(e)) == "v2gchargeProgressType" ){
+                auto fit = str2enum.find(name(as_symbol_ref(e)));
+                if (fit == str2enum.end()) return;
+                r = fit->second;
+            }
+        });
+        return r;
+    }
+
+    //
+    // iso2EVOperationType
+    //
+
+
+    template<> iso2EVOperationType MessageBuilder::emit<iso2EVOperationType>(ceps::ast::Struct & msg){
+        iso2EVOperationType r{};
+        map<string,iso2EVOperationType> str2enum { 
+            {"Charge",iso2EVOperationType_Charge},
+            {"BPT",iso2EVOperationType_BPT}};
+        for_all_children(msg, [&] (node_t e){
+            if (is<ceps::ast::Ast_node_kind::symbol>(e) && kind(as_symbol_ref(e)) == "v2gEVOperationType" ){
+                auto fit = str2enum.find(name(as_symbol_ref(e)));
+                if (fit == str2enum.end()) return;
+                r = fit->second;
+            }
+        });
+        return r;
+    }
+
+
+    //
+    // iso2ChargingProfileType
+    //
+
+    template<> iso2ChargingProfileType MessageBuilder::emit<iso2ChargingProfileType>(ceps::ast::Struct & msg){
+        iso2ChargingProfileType r{};
+        r.ProfileEntry.arrayLen = 
+            read_array<iso2PMaxScheduleEntryType>(msg, r.ProfileEntry, string{"ProfileEntry"});
+        return r;
+    }    
+
+    //
+    // iso2PowerDeliveryReqType
+    //
+
+    template<> iso2PowerDeliveryReqType MessageBuilder::emit<iso2PowerDeliveryReqType>(ceps::ast::Struct & msg){
+        iso2PowerDeliveryReqType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"ChargeProgress");
+            if (match_res) {
+                r.ChargeProgress = emit<iso2chargeProgressType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVOperation");
+            if (match_res) {
+                r.EVOperation_isUsed = 1;
+                r.EVOperation = emit<iso2EVOperationType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"SAScheduleTupleID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.SAScheduleTupleID = *field_value;
+                return;
+            }    
+            match_res = match_struct(e,"ChargingProfile");
+            if (match_res) {
+                r.ChargingProfile_isUsed = 1;
+                r.ChargingProfile = emit<iso2ChargingProfileType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;
+    }
 
     //
     // MessageBuilder::build
@@ -1731,6 +1817,11 @@ namespace ceps2openv2g{
          emit<iso2ChargeParameterDiscoveryReqType>(ceps_struct);
         else if(name(ceps_struct)== "ChargeParameterDiscoveryRes")
          emit<iso2ChargeParameterDiscoveryResType>(ceps_struct);
+        else if(name(ceps_struct)== "PowerDeliveryReq")
+         emit<iso2PowerDeliveryReqType>(ceps_struct);
+        else if(name(ceps_struct)== "PowerDeliveryRes")
+         emit<iso2PowerDeliveryResType>(ceps_struct);
+
         return nullptr;
     }
 }
