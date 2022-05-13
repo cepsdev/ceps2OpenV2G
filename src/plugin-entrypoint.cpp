@@ -1783,6 +1783,23 @@ namespace ceps2openv2g{
     }
 
     //
+    // iso2PowerDeliveryResType
+    //
+
+    template<> iso2PowerDeliveryResType MessageBuilder::emit<iso2PowerDeliveryResType>(ceps::ast::Struct & msg){
+        iso2PowerDeliveryResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVSEProcessing");
+            if (match_res) {
+                r.EVSEProcessing = emit<iso2EVSEProcessingType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;
+    }
+
+    //
     // MessageBuilder::build
     //
 
