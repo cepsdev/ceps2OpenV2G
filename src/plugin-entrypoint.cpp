@@ -1800,6 +1800,32 @@ namespace ceps2openv2g{
     }
 
     //
+    // iso2CableCheckReqType
+    //
+
+    template<> iso2CableCheckReqType MessageBuilder::emit<iso2CableCheckReqType>(ceps::ast::Struct & msg){
+        iso2CableCheckReqType r{};
+        return r;
+    }
+
+    //
+    // iso2CableCheckResType
+    //
+
+    template<> iso2CableCheckResType MessageBuilder::emit<iso2CableCheckResType>(ceps::ast::Struct & msg){
+        iso2CableCheckResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVSEProcessing");
+            if (match_res) {
+                r.EVSEProcessing = emit<iso2EVSEProcessingType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;
+    }
+
+    //
     // MessageBuilder::build
     //
 
@@ -1838,7 +1864,10 @@ namespace ceps2openv2g{
          emit<iso2PowerDeliveryReqType>(ceps_struct);
         else if(name(ceps_struct)== "PowerDeliveryRes")
          emit<iso2PowerDeliveryResType>(ceps_struct);
-
+        else if(name(ceps_struct)== "CableCheckReq")
+         emit<iso2CableCheckReqType>(ceps_struct);
+        else if(name(ceps_struct)== "CableCheckRes")
+         emit<iso2CableCheckResType>(ceps_struct);
         return nullptr;
     }
 }
