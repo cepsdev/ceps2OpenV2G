@@ -732,6 +732,30 @@ namespace ceps2openv2g{
     }
 
     //
+    // iso2PaymentDetailsResType
+    //
+    
+    template<> iso2PaymentDetailsResType MessageBuilder::emit<iso2PaymentDetailsResType>(ceps::ast::Struct & msg){
+        iso2PaymentDetailsResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"GenChallenge");
+            if (match_res) {
+                r.GenChallenge.bytesLen = write_bytes(as_struct_ptr(e),r.GenChallenge.bytes, 
+                                                        r.GenChallenge.bytes + sizeof(r.GenChallenge.bytes));
+                return;
+            }
+            match_res = match_struct(e,"EVSETimeStamp");
+            if (match_res) {
+                auto field_value = get_numerical_field<int64_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.EVSETimeStamp = *field_value;
+            }
+        });
+        return r;
+    }
+
+    //
     // MessageBuilder::build
     //
 
@@ -756,6 +780,8 @@ namespace ceps2openv2g{
          emit<iso2PaymentServiceSelectionResType>(ceps_struct); 
         else if(name(ceps_struct)== "PaymentDetailsReq")
          emit<iso2PaymentDetailsReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentDetailsRes")
+         emit<iso2PaymentDetailsResType>(ceps_struct); 
 
          
 
