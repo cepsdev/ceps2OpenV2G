@@ -1243,6 +1243,62 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+
+    //
+    // iso2RelativeTimeIntervalType
+    //
+
+    template<> iso2RelativeTimeIntervalType MessageBuilder::emit<iso2RelativeTimeIntervalType>(ceps::ast::Struct & msg){
+        iso2RelativeTimeIntervalType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"start");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.start = *field_value;
+                return;
+            } 
+            match_res = match_struct(e,"duration");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.duration = *field_value;
+                r.duration_isUsed = 1;
+                return;
+            }
+        });
+    }
+
+    //
+    // iso2PMaxScheduleEntryType
+    //
+
+    template<> iso2PMaxScheduleEntryType MessageBuilder::emit<iso2PMaxScheduleEntryType>(ceps::ast::Struct & msg){
+        iso2PMaxScheduleEntryType r{};
+        r.PMax.arrayLen = 
+            read_array<iso2PhysicalValueType>(msg, r.PMax, string{"PMax"});
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"RelativeTimeInterval");
+            if (match_res) {
+                r.RelativeTimeInterval = emit<iso2RelativeTimeIntervalType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;            
+    }
+
+    //
+    // iso2MinimumPMaxRequestType
+    //
+
+    template<> iso2MinimumPMaxRequestType MessageBuilder::emit<iso2MinimumPMaxRequestType>(ceps::ast::Struct & msg){
+        iso2MinimumPMaxRequestType r{};
+        r.MinimumPMaxScheduleEntry.arrayLen = 
+            read_array<iso2PMaxScheduleEntryType>(msg, r.MinimumPMaxScheduleEntry, string{"PMaxScheduleEntry"});
+        return r;
+    }   
+
     //
     // iso2ChargeParameterDiscoveryReqType
     //
@@ -1297,6 +1353,7 @@ namespace ceps2openv2g{
             }
             match_res = match_struct(e,"MinimumPMaxRequest");
             if (match_res) {
+                r.MinimumPMaxRequest = emit<iso2MinimumPMaxRequestType>(as_struct_ref(e));
                 r.MinimumPMaxRequest_isUsed = 1;
                 return;
             }
