@@ -170,6 +170,7 @@ namespace ceps2openv2g{
         if (it == str2enum.end()) return {};
         return it->second;
     }
+
     optional<iso2EVSENotificationType> get_v2g_EVSENotification(ceps::ast::Struct& msg){
         if (children(msg).size() != 1) return {};
         auto elem_raw = children(msg)[0];
@@ -186,6 +187,7 @@ namespace ceps2openv2g{
         if (it == str2enum.end()) return {};
         return it->second;
     }
+
 
     template <typename T> optional<T> get_numerical_field(ceps::ast::Struct& msg){
         if (children(msg).size() != 1) return {};
@@ -438,6 +440,7 @@ namespace ceps2openv2g{
                 auto field_value = get_string_field(as_struct_ref(e));
                 if (!field_value) return;
                 strncpy(r.Name.characters,field_value->c_str(), sizeof(r.Name.characters - 1)); 
+                r.Name.charactersLen = field_value->length();
                 return;
             }
             match_res = match_struct(e,"boolValue");
@@ -755,6 +758,72 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+    //
+    // iso2AuthorizationReqType
+    //
+    
+    template<> iso2AuthorizationReqType MessageBuilder::emit<iso2AuthorizationReqType>(ceps::ast::Struct & msg){
+        iso2AuthorizationReqType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"Id");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.Id.characters,field_value->c_str(), sizeof(r.Id.characters - 1)); 
+                r.Id.charactersLen = field_value->length();
+                return;
+            }            
+            match_res = match_struct(e,"GenChallenge");
+            if (match_res) {
+                r.GenChallenge.bytesLen = write_bytes(as_struct_ptr(e),r.GenChallenge.bytes, 
+                                                        r.GenChallenge.bytes + sizeof(r.GenChallenge.bytes));
+                r.GenChallenge_isUsed = 1;
+                return;
+            }
+        });
+        return r;
+    }
+
+
+    //
+    // iso2EVSEProcessingType
+    //
+
+    template<> iso2EVSEProcessingType MessageBuilder::emit<iso2EVSEProcessingType>(ceps::ast::Struct & msg){
+        iso2EVSEProcessingType r{};
+        map<string,iso2EVSEProcessingType> str2enum { 
+            {"Finished",iso2EVSEProcessingType_Finished},
+            {"Ongoing",iso2EVSEProcessingType_Ongoing},
+            {"Ongoing_WaitingForCustomerInteraction",iso2EVSEProcessingType_Ongoing_WaitingForCustomerInteraction}
+        };
+        for_all_children(msg, [&] (node_t e){
+            if (is<ceps::ast::Ast_node_kind::symbol>(e) && kind(as_symbol_ref(e)) == "v2gEVSEProcessingType" ){
+                auto fit = str2enum.find(name(as_symbol_ref(e)));
+                if (fit == str2enum.end()) return;
+                r = fit->second;
+            }
+        });
+        return r;
+    }
+
+    //
+    // iso2AuthorizationResType
+    //
+    
+    template<> iso2AuthorizationResType MessageBuilder::emit<iso2AuthorizationResType>(ceps::ast::Struct & msg){
+        iso2AuthorizationResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVSEProcessing");
+            if (match_res) {
+                r.EVSEProcessing = emit<iso2EVSEProcessingType>(as_struct_ref(e));
+                return;
+            }            
+        });
+        return r;
+    }
+
     //
     // MessageBuilder::build
     //
@@ -781,7 +850,13 @@ namespace ceps2openv2g{
         else if(name(ceps_struct)== "PaymentDetailsReq")
          emit<iso2PaymentDetailsReqType>(ceps_struct); 
         else if(name(ceps_struct)== "PaymentDetailsRes")
-         emit<iso2PaymentDetailsResType>(ceps_struct); 
+         emit<iso2PaymentDetailsResType>(ceps_struct);
+        else if(name(ceps_struct)== "AuthorizationReq")
+         emit<iso2AuthorizationReqType>(ceps_struct);
+        else if(name(ceps_struct)== "AuthorizationRes")
+         emit<iso2AuthorizationResType>(ceps_struct);
+
+          
 
          
 

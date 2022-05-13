@@ -2,6 +2,7 @@
 kind v2gResponsCodeType;
 kind v2gEVSENotificationType;
 kind v2gpaymentOptionType;
+kind v2gEVSEProcessingType;
 
 v2gResponsCodeType 	OK,
 					OK_NewSessionEstablished,
@@ -36,6 +37,7 @@ v2gResponsCodeType 	OK,
 
 v2gEVSENotificationType StopCharging, ReNegotiation;
 v2gpaymentOptionType Contract, ExternalPayment;
+v2gEVSEProcessingType Finished,Ongoing, Ongoing_WaitingForCustomerInteraction;
 
 v2g(
 	SessionSetupReq{
@@ -249,6 +251,30 @@ v2g(
 	}
 );
 
+
+v2g(
+ AuthorizationReq{
+	Id{"Blabla";};
+	GenChallenge{
+		1;2;3;4;5;6;7;8;9;10;
+	};
+ }
+);
+
+v2g(
+ AuthorizationRes{
+		ResponseCode{
+			 FAILED_ContactorError;
+		};
+		EVSEStatus{
+			NotificationMaxDelay{13;};
+			EVSENotification{ReNegotiation;};
+		};
+		EVSEProcessing{
+			 Finished;
+		};
+ }
+);
 
 
 
