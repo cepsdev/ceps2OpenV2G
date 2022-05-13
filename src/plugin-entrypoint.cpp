@@ -1994,7 +1994,40 @@ namespace ceps2openv2g{
                 r.EVMinimumEnergyRequest_isUsed = 1;
                 return;
             }
-
+            match_res = match_struct(e,"DisplayParameters");
+            if (match_res) {
+                r.DisplayParameters = emit<iso2DisplayParametersType>(as_struct_ref(e));
+                r.DisplayParameters_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVTargetCurrent");
+            if (match_res) {
+                r.EVTargetCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVTargetVoltage");
+            if (match_res) {
+                r.EVTargetVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumCurrent");
+            if (match_res) {
+                r.EVMaximumCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumCurrent_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumPower");
+            if (match_res) {
+                r.EVMaximumPower = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumPower_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumVoltage");
+            if (match_res) {
+                r.EVMaximumVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumVoltage_isUsed = 1;
+                return;
+            }
         });
         return r;
     }
