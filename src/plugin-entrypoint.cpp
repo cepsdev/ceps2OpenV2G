@@ -979,6 +979,98 @@ namespace ceps2openv2g{
 
 
     //
+    // iso2DC_EVChargeParameterType
+    //
+
+    template<> iso2DC_EVChargeParameterType MessageBuilder::emit<iso2DC_EVChargeParameterType>(ceps::ast::Struct & msg){
+        iso2DC_EVChargeParameterType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"DepartureTime");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.DepartureTime = *field_value;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumChargePower");
+            if (match_res) {
+                r.EVMaximumChargePower = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumChargePower_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumChargePower");
+            if (match_res) {
+                r.EVMinimumChargePower = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMinimumChargePower_isUsed = 1;
+                return;
+            }
+
+            match_res = match_struct(e,"EVMaximumChargeCurrent");
+            if (match_res) {
+                r.EVMaximumChargeCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumChargeCurrent");
+            if (match_res) {
+                r.EVMinimumChargeCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+
+            match_res = match_struct(e,"EVMaximumVoltage");
+            if (match_res) {
+                r.EVMaximumVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+
+            match_res = match_struct(e,"EVTargetEnergyRequest");
+            if (match_res) {
+                r.EVTargetEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVTargetEnergyRequest_isUsed=1;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumEnergyRequest");
+            if (match_res) {
+                r.EVMaximumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumEnergyRequest_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumEnergyRequest");
+            if (match_res) {
+                r.EVMinimumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMinimumEnergyRequest_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"CurrentSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.CurrentSOC = *field_value;
+                r.CurrentSOC_isUsed = 1;
+                return;
+            }    
+            match_res = match_struct(e,"TargetSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.TargetSOC = *field_value;
+                r.TargetSOC_isUsed = 1;
+                return;
+            }    
+            match_res = match_struct(e,"BulkSOC");
+            if (match_res) {
+                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.BulkSOC = *field_value;
+                r.BulkSOC_isUsed = 1;
+                return;
+            } 
+        });    
+        return r;
+    }
+
+
+
+    //
     // iso2ChargeParameterDiscoveryReqType
     //
 
@@ -1015,6 +1107,7 @@ namespace ceps2openv2g{
             match_res = match_struct(e,"DC_EVChargeParameter");
             if (match_res) {
                 r.DC_EVChargeParameter_isUsed = 1;
+                r.DC_EVChargeParameter = emit<iso2DC_EVChargeParameterType>(as_struct_ref(e));
                 return;
             }
             match_res = match_struct(e,"DC_EVBidirectionalParameter");
