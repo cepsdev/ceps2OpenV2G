@@ -1825,6 +1825,45 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+    //
+    // iso2PreChargeReqType
+    //
+
+    template<> iso2PreChargeReqType MessageBuilder::emit<iso2PreChargeReqType>(ceps::ast::Struct & msg){
+        iso2PreChargeReqType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVTargetVoltage");
+            if (match_res) {
+                r.EVTargetVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVTargetCurrent");
+            if (match_res) {
+                r.EVTargetCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;
+    }
+
+    //
+    // iso2PreChargeResType
+    //
+
+    template<> iso2PreChargeResType MessageBuilder::emit<iso2PreChargeResType>(ceps::ast::Struct & msg){
+        iso2PreChargeResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVSEPresentVoltage");
+            if (match_res) {
+                r.EVSEPresentVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;
+    }   
+
     //
     // MessageBuilder::build
     //
@@ -1868,6 +1907,11 @@ namespace ceps2openv2g{
          emit<iso2CableCheckReqType>(ceps_struct);
         else if(name(ceps_struct)== "CableCheckRes")
          emit<iso2CableCheckResType>(ceps_struct);
+        else if(name(ceps_struct)== "PreChargeReq")
+         emit<iso2PreChargeReqType>(ceps_struct);
+        else if(name(ceps_struct)== "PreChargeRes")
+         emit<iso2PreChargeResType>(ceps_struct);
+
         return nullptr;
     }
 }
