@@ -824,6 +824,141 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+    //
+    // iso2EVEnergyTransferParameterType
+    //
+
+    template<> iso2EVEnergyTransferParameterType MessageBuilder::emit<iso2EVEnergyTransferParameterType>(ceps::ast::Struct & msg){
+        iso2EVEnergyTransferParameterType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"DepartureTime");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.DepartureTime = *field_value;
+                return;
+            }}
+        );
+        return r;
+    }
+
+    //
+    // iso2AC_EVChargeParameterType
+    //
+
+    template<> iso2AC_EVChargeParameterType MessageBuilder::emit<iso2AC_EVChargeParameterType>(ceps::ast::Struct & msg){
+        iso2AC_EVChargeParameterType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"DepartureTime");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.DepartureTime = *field_value;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumChargePower");
+            if (match_res) {
+                r.EVMaximumChargePower = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumChargeCurrent");
+            if (match_res) {
+                r.EVMaximumChargeCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumChargeCurrent");
+            if (match_res) {
+                r.EVMinimumChargeCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVTargetEnergyRequest");
+            if (match_res) {
+                r.EVTargetEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVTargetEnergyRequest_isUsed=1;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumEnergyRequest");
+            if (match_res) {
+                r.EVMaximumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMaximumEnergyRequest_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMinimumEnergyRequest");
+            if (match_res) {
+                r.EVMinimumEnergyRequest = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVMinimumEnergyRequest_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVMaximumVoltage");
+            if (match_res) {
+                r.EVMaximumVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+        });    
+        return r;
+    }
+    //
+    // iso2ChargeParameterDiscoveryReqType
+    //
+
+    template<> iso2ChargeParameterDiscoveryReqType MessageBuilder::emit<iso2ChargeParameterDiscoveryReqType>(ceps::ast::Struct & msg){
+        iso2ChargeParameterDiscoveryReqType r{};
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"MaxSupportingPoints");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.MaxSupportingPoints = *field_value;
+                r.MaxSupportingPoints_isUsed = 1;
+                return;
+            }    
+            match_res = match_struct(e,"EVEnergyTransferParameter");
+            if (match_res) {
+                r.EVEnergyTransferParameter = 
+                                            emit<iso2EVEnergyTransferParameterType>(as_struct_ref(e));                
+                r.EVEnergyTransferParameter_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"AC_EVChargeParameter");
+            if (match_res) {
+                r.AC_EVChargeParameter = emit<iso2AC_EVChargeParameterType>(as_struct_ref(e));
+                r.AC_EVChargeParameter_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"AC_EVBidirectionalParameter");
+            if (match_res) {
+                r.AC_EVBidirectionalParameter_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"DC_EVChargeParameter");
+            if (match_res) {
+                r.DC_EVChargeParameter_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"DC_EVBidirectionalParameter");
+            if (match_res) {
+                r.DC_EVBidirectionalParameter_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"WPT_EVChargeParameter");
+            if (match_res) {
+                r.WPT_EVChargeParameter_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"MinimumPMaxRequest");
+            if (match_res) {
+                r.MinimumPMaxRequest_isUsed = 1;
+                return;
+            }
+        });
+        return r;
+    }
+
+
+
+
+
     //
     // MessageBuilder::build
     //
@@ -855,6 +990,9 @@ namespace ceps2openv2g{
          emit<iso2AuthorizationReqType>(ceps_struct);
         else if(name(ceps_struct)== "AuthorizationRes")
          emit<iso2AuthorizationResType>(ceps_struct);
+        else if(name(ceps_struct)== "ChargeParameterDiscoveryReq")
+         emit<iso2ChargeParameterDiscoveryReqType>(ceps_struct);
+
 
           
 
