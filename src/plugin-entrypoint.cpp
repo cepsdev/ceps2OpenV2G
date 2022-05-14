@@ -1719,7 +1719,6 @@ namespace ceps2openv2g{
     // iso2EVOperationType
     //
 
-
     template<> iso2EVOperationType MessageBuilder::emit<iso2EVOperationType>(ceps::ast::Struct & msg){
         iso2EVOperationType r{};
         map<string,iso2EVOperationType> str2enum { 
@@ -1734,7 +1733,6 @@ namespace ceps2openv2g{
         });
         return r;
     }
-
 
     //
     // iso2ChargingProfileType
@@ -2255,6 +2253,51 @@ namespace ceps2openv2g{
     }
 
     //
+    // iso2chargingSessionType
+    //
+
+    template<> iso2chargingSessionType MessageBuilder::emit<iso2chargingSessionType>(ceps::ast::Struct & msg){
+        iso2chargingSessionType r{};
+        map<string,iso2chargingSessionType> str2enum { 
+            {"Terminate",iso2chargingSessionType_Terminate},
+            {"Pause",iso2chargingSessionType_Pause}};
+        for_all_children(msg, [&] (node_t e){
+            if (is<ceps::ast::Ast_node_kind::symbol>(e) && kind(as_symbol_ref(e)) == "v2gchargingSessionType" ){
+                auto fit = str2enum.find(name(as_symbol_ref(e)));
+                if (fit == str2enum.end()) return;
+                r = fit->second;
+            }
+        });
+        return r;
+    }
+
+    //
+    // iso2SessionStopReqType
+    //
+
+    template<> iso2SessionStopReqType MessageBuilder::emit<iso2SessionStopReqType>(ceps::ast::Struct & msg){
+        iso2SessionStopReqType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ChargingSession");
+            if (match_res) {
+                r.ChargingSession = emit<iso2chargingSessionType>(as_struct_ref(e));
+                return;
+            }
+        });        
+        return r;
+    }
+
+    //
+    // iso2SessionStopResType
+    //
+
+    template<> iso2SessionStopResType MessageBuilder::emit<iso2SessionStopResType>(ceps::ast::Struct & msg){
+        iso2SessionStopResType r{};
+        evse_prolog(r,msg);
+        return r;
+    }
+
+    //
     // MessageBuilder::build
     //
 
@@ -2310,11 +2353,16 @@ namespace ceps2openv2g{
          emit<iso2MeteringReceiptReqType>(ceps_struct);
         else if(name(ceps_struct)== "MeteringReceiptRes")
          emit<iso2MeteringReceiptResType>(ceps_struct);
-         // iso2WeldingDetectionReqType / iso2WeldingDetectionResType
+        // iso2WeldingDetectionReqType / iso2WeldingDetectionResType
         else if(name(ceps_struct)== "WeldingDetectionReq")
          emit<iso2WeldingDetectionReqType>(ceps_struct);
         else if(name(ceps_struct)== "WeldingDetectionRes")
-         emit<iso2WeldingDetectionResType>(ceps_struct);
+         emit<iso2WeldingDetectionResType>(ceps_struct);        
+        // iso2SessionStopReqType/iso2SessionStopResType
+        else if(name(ceps_struct)== "SessionStopReq")
+         emit<iso2SessionStopReqType>(ceps_struct);
+        else if(name(ceps_struct)== "SessionStopRes")
+         emit<iso2SessionStopResType>(ceps_struct);        
 
         return nullptr;
     }
