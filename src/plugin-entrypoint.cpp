@@ -19,11 +19,8 @@
 
 #include "ceps_ast.hh"
 #include "core/include/state_machine_simulation_core.hpp"
-
-
-
 #include "iso2EXIDatatypes.h" 
-
+#include "appHandEXIDatatypes.h" 
 
 template<typename Iter>
 size_t write_bytes(ceps::ast::Struct_ptr strct, Iter beg, Iter end){
@@ -2297,6 +2294,111 @@ namespace ceps2openv2g{
         return r;
     }
 
+
+    //
+    // appHandAppProtocolType
+    //
+
+    template<> appHandAppProtocolType MessageBuilder::emit<appHandAppProtocolType>(ceps::ast::Struct & msg){
+        appHandAppProtocolType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ProtocolNamespace");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.ProtocolNamespace.characters,field_value->c_str(), sizeof(r.ProtocolNamespace.characters - 1)); 
+                r.ProtocolNamespace.charactersLen = field_value->length();
+                return;
+            }
+            match_res = match_struct(e,"VersionNumberMajor");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.VersionNumberMajor = *field_value;
+                return;
+            }
+            match_res = match_struct(e,"VersionNumberMinor");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.VersionNumberMinor = *field_value;
+                return;
+            }
+            match_res = match_struct(e,"SchemaID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.SchemaID = *field_value;
+                return;
+            }
+            match_res = match_struct(e,"Priority");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.Priority = *field_value;
+                return;
+            }
+        });        
+        return r;
+    }
+
+    //
+    // appHandAnonType_supportedAppProtocolReq
+    //
+
+    template<> appHandAnonType_supportedAppProtocolReq MessageBuilder::emit<appHandAnonType_supportedAppProtocolReq>(ceps::ast::Struct & msg){
+        appHandAnonType_supportedAppProtocolReq r{};
+        r.AppProtocol.arrayLen = 
+            read_array<appHandAppProtocolType>(msg, r.AppProtocol, string{"AppProtocol"});          
+        return r;
+    }
+
+    //
+    // appHandresponseCodeType
+    //
+
+    template<> appHandresponseCodeType MessageBuilder::emit<appHandresponseCodeType>(ceps::ast::Struct & msg){
+        appHandresponseCodeType r{};
+        map<string,appHandresponseCodeType> str2enum { 
+            {"OK_SuccessfulNegotiation",appHandresponseCodeType_OK_SuccessfulNegotiation},
+            {"OK_SuccessfulNegotiationWithMinorDeviation",appHandresponseCodeType_OK_SuccessfulNegotiationWithMinorDeviation},
+            {"Failed_NoNegotiation",appHandresponseCodeType_Failed_NoNegotiation}};
+        for_all_children(msg, [&] (node_t e){
+            if (is<ceps::ast::Ast_node_kind::symbol>(e) && kind(as_symbol_ref(e)) == "v2gappHandresponseCodeType" ){
+                auto fit = str2enum.find(name(as_symbol_ref(e)));
+                if (fit == str2enum.end()) return;
+                r = fit->second;
+            }
+        });
+        return r;
+    }
+
+
+    //
+    // appHandAnonType_supportedAppProtocolRes
+    //
+
+    template<> appHandAnonType_supportedAppProtocolRes MessageBuilder::emit<appHandAnonType_supportedAppProtocolRes>(ceps::ast::Struct & msg){
+        appHandAnonType_supportedAppProtocolRes r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"ResponseCode");
+            if (match_res) {
+                r.ResponseCode = emit<appHandresponseCodeType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"SchemaID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.SchemaID = *field_value;
+                r.SchemaID_isUsed = 1;
+                return;
+            }
+        });
+        return r;
+    }
+
+
     //
     // MessageBuilder::build
     //
@@ -2362,12 +2464,15 @@ namespace ceps2openv2g{
         else if(name(ceps_struct)== "SessionStopReq")
          emit<iso2SessionStopReqType>(ceps_struct);
         else if(name(ceps_struct)== "SessionStopRes")
-         emit<iso2SessionStopResType>(ceps_struct);        
-
+         emit<iso2SessionStopResType>(ceps_struct);
+        // supportedAppProtocolReq/supportedAppProtocolRes   
+        else if(name(ceps_struct)== "supportedAppProtocolReq")
+         emit<appHandAnonType_supportedAppProtocolReq>(ceps_struct);
+        else if(name(ceps_struct)== "supportedAppProtocolRes")
+         emit<appHandAnonType_supportedAppProtocolRes>(ceps_struct);
         return nullptr;
     }
 }
-
 
 //
 // Plugin specific code

@@ -276,11 +276,33 @@ v2g(
  }
 );
 
+v2g(
+	supportedAppProtocolReq{
+		AppProtocol{
+			ProtocolNamespace{"jhgjhaGSJFKHGKJGFH";};
+			VersionNumberMajor{1;};
+			VersionNumberMinor{2;};
+			SchemaID{3;};
+			Priority{1;};
+		};
+		AppProtocol{
+			ProtocolNamespace{"jhgjhaGSJFKHGKJGFH";};
+			VersionNumberMajor{4;};
+			VersionNumberMinor{8;};
+			SchemaID{30;};
+			Priority{2;};
+		};
+	}
+);
 
 
 
-
-
+v2g(
+	supportedAppProtocolRes{
+		ResponseCode{};
+		SchemaID{1;};
+	}
+);
 
 
 
