@@ -2229,6 +2229,32 @@ namespace ceps2openv2g{
     }
 
     //
+    // iso2WeldingDetectionReqType
+    //
+
+    template<> iso2WeldingDetectionReqType MessageBuilder::emit<iso2WeldingDetectionReqType>(ceps::ast::Struct & msg){
+        iso2WeldingDetectionReqType r{};
+        return r;
+    }
+
+    //
+    // iso2WeldingDetectionResType
+    //
+
+    template<> iso2WeldingDetectionResType MessageBuilder::emit<iso2WeldingDetectionResType>(ceps::ast::Struct & msg){
+        iso2WeldingDetectionResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"EVSEPresentVoltage");
+            if (match_res) {
+                r.EVSEPresentVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+        });        
+        return r;
+    }
+
+    //
     // MessageBuilder::build
     //
 
@@ -2284,6 +2310,11 @@ namespace ceps2openv2g{
          emit<iso2MeteringReceiptReqType>(ceps_struct);
         else if(name(ceps_struct)== "MeteringReceiptRes")
          emit<iso2MeteringReceiptResType>(ceps_struct);
+         // iso2WeldingDetectionReqType / iso2WeldingDetectionResType
+        else if(name(ceps_struct)== "WeldingDetectionReq")
+         emit<iso2WeldingDetectionReqType>(ceps_struct);
+        else if(name(ceps_struct)== "WeldingDetectionRes")
+         emit<iso2WeldingDetectionResType>(ceps_struct);
 
         return nullptr;
     }
