@@ -2086,6 +2086,7 @@ namespace ceps2openv2g{
                 return;
             }
         });
+        return r;
     }            
 
     //
@@ -2180,6 +2181,54 @@ namespace ceps2openv2g{
     }
 
     //
+    // MeteringReceiptReq
+    //
+
+    template<> iso2MeteringReceiptReqType MessageBuilder::emit<iso2MeteringReceiptReqType>(ceps::ast::Struct & msg){
+        iso2MeteringReceiptReqType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"Id");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.Id.characters,field_value->c_str(), sizeof(r.Id.characters - 1)); 
+                r.Id.charactersLen = field_value->length();
+                return;
+            }
+            match_res = match_struct(e,"SessionID");
+            if (match_res) {
+                r.SessionID.bytesLen = write_bytes(as_struct_ptr(e),r.SessionID.bytes, 
+                                                        r.SessionID.bytes + sizeof(r.SessionID.bytes));
+                return;
+            }
+            match_res = match_struct(e,"SAScheduleTupleID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.SAScheduleTupleID = *field_value;
+                r.SAScheduleTupleID_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"MeterInfo");
+            if (match_res) {
+                r.MeterInfo = emit<iso2MeterInfoType>(as_struct_ref(e));
+                return;
+            }
+        });
+        return r;
+    }
+
+    //
+    // iso2MeteringReceiptResType
+    //
+
+    template<> iso2MeteringReceiptResType MessageBuilder::emit<iso2MeteringReceiptResType>(ceps::ast::Struct & msg){
+        iso2MeteringReceiptResType r{};
+        evse_prolog(r,msg);
+        return r;
+    }
+
+    //
     // MessageBuilder::build
     //
 
@@ -2230,6 +2279,12 @@ namespace ceps2openv2g{
          emit<iso2CurrentDemandReqType>(ceps_struct);
         else if(name(ceps_struct)== "CurrentDemandRes")
          emit<iso2CurrentDemandResType>(ceps_struct);
+        // MeteringReceiptReq / MeteringReceiptRes
+        else if(name(ceps_struct)== "MeteringReceiptReq")
+         emit<iso2MeteringReceiptReqType>(ceps_struct);
+        else if(name(ceps_struct)== "MeteringReceiptRes")
+         emit<iso2MeteringReceiptResType>(ceps_struct);
+
         return nullptr;
     }
 }
