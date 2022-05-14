@@ -2033,6 +2033,153 @@ namespace ceps2openv2g{
     }
 
     //
+    // iso2MeterInfoType
+    //
+    template<> iso2MeterInfoType MessageBuilder::emit<iso2MeterInfoType>(ceps::ast::Struct & msg){
+        iso2MeterInfoType r{};
+        for_all_children(msg, [&](node_t e){
+            auto match_res = match_struct(e,"MeterID");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.MeterID.characters,field_value->c_str(), sizeof(r.MeterID.characters - 1)); 
+                r.MeterID.charactersLen = field_value->length();
+                return;
+            }
+            match_res = match_struct(e,"MeterReadingCharged");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint64_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.MeterReadingCharged = *field_value;
+                r.MeterReadingCharged_isUsed = 1;
+                return;
+            }            
+            match_res = match_struct(e,"MeterReadingDischarged");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint64_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.MeterReadingDischarged = *field_value;
+                r.MeterReadingDischarged_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"SigMeterReading");
+            if (match_res) {
+                r.SigMeterReading.bytesLen = write_bytes(as_struct_ptr(e),r.SigMeterReading.bytes, 
+                                                        r.SigMeterReading.bytes + sizeof(r.SigMeterReading.bytes));
+                r.SigMeterReading_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"MeterStatus");
+            if (match_res) {
+                auto field_value = get_numerical_field<int16_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.MeterStatus = *field_value;
+                r.MeterStatus_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"TMeter");
+            if (match_res) {
+                auto field_value = get_numerical_field<int64_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.TMeter = *field_value;
+                r.TMeter_isUsed = 1;
+                return;
+            }
+        });
+    }            
+
+    //
+    // iso2CurrentDemandResType
+    //
+
+    template<> iso2CurrentDemandResType MessageBuilder::emit<iso2CurrentDemandResType>(ceps::ast::Struct & msg){
+        iso2CurrentDemandResType r{};
+        evse_prolog(r,msg);
+        for_all_children(msg, [&](node_t e){            
+            auto match_res = match_struct(e,"EVSEPresentCurrent");
+            if (match_res) {
+                r.EVSEPresentCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVSEPresentVoltage");
+            if (match_res) {
+                r.EVSEPresentVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                return;
+            }
+            match_res = match_struct(e,"EVSEPowerLimitAchieved");
+            if (match_res) {
+                auto field_value = get_numerical_field<int>(as_struct_ref(e));
+                if (!field_value) return;
+                r.EVSEPowerLimitAchieved = *field_value;
+                return;
+            }            
+            match_res = match_struct(e,"EVSECurrentLimitAchieved");
+            if (match_res) {
+                auto field_value = get_numerical_field<int>(as_struct_ref(e));
+                if (!field_value) return;
+                r.EVSECurrentLimitAchieved = *field_value;
+                return;
+            }            
+            match_res = match_struct(e,"EVSEVoltageLimitAchieved");
+            if (match_res) {
+                auto field_value = get_numerical_field<int>(as_struct_ref(e));
+                if (!field_value) return;
+                r.EVSEVoltageLimitAchieved = *field_value;
+                return;
+            } 
+            match_res = match_struct(e,"EVSEMaximumPower");
+            if (match_res) {
+                r.EVSEMaximumPower = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVSEMaximumPower_isUsed = 1;
+                return;
+            }         
+            match_res = match_struct(e,"EVSEMaximumCurrent");
+            if (match_res) {
+                r.EVSEMaximumCurrent = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVSEMaximumCurrent_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVSEMaximumVoltage");
+            if (match_res) {
+                r.EVSEMaximumVoltage = emit<iso2PhysicalValueType>(as_struct_ref(e));
+                r.EVSEMaximumVoltage_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"EVSEID");
+            if (match_res) {
+                auto field_value = get_string_field(as_struct_ref(e));
+                if (!field_value) return;
+                strncpy(r.EVSEID.characters,field_value->c_str(), sizeof(r.EVSEID.characters - 1)); 
+                r.EVSEID.charactersLen = field_value->length();
+                return;
+            }
+            match_res = match_struct(e,"SAScheduleTupleID");
+            if (match_res) {
+                auto field_value = get_numerical_field<uint8_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.SAScheduleTupleID = *field_value;
+                r.SAScheduleTupleID_isUsed = 1;
+                return;
+            } 
+            match_res = match_struct(e,"MeterInfo");
+            if (match_res) {
+                r.MeterInfo = emit<iso2MeterInfoType>(as_struct_ref(e));
+                r.MeterInfo_isUsed = 1;
+                return;
+            }
+            match_res = match_struct(e,"ReceiptRequired");
+            if (match_res) {
+                auto field_value = get_numerical_field<int32_t>(as_struct_ref(e));
+                if (!field_value) return;
+                r.ReceiptRequired = *field_value;
+                r.ReceiptRequired_isUsed = 1;
+                return;
+            }
+        });
+        return r;
+    }
+
+    //
     // MessageBuilder::build
     //
 
