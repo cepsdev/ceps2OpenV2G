@@ -97,14 +97,6 @@ namespace ceps2openv2g{
 
     };
 
-    template<> iso2EVSEStatusType MessageBuilder::emit<iso2EVSEStatusType>(ceps::ast::Struct & msg);
-    template<> iso2SessionSetupReqType MessageBuilder::emit<iso2SessionSetupReqType>(ceps::ast::Struct & msg);
-    template<> iso2SessionSetupResType MessageBuilder::emit<iso2SessionSetupResType>(ceps::ast::Struct & msg);
-    template<> iso2SessionSetupReqType MessageBuilder::emit<iso2SessionSetupReqType>(ceps::ast::Struct & msg);
-    template<> iso2SessionSetupResType MessageBuilder::emit<iso2SessionSetupResType>(ceps::ast::Struct & msg);
-    template<> iso2ServiceListType MessageBuilder::emit<iso2ServiceListType>(ceps::ast::Struct & msg);
-    template<> iso2PhysicalValueType MessageBuilder::emit<iso2PhysicalValueType>(ceps::ast::Struct & msg);
-
     template <typename F> void for_all_children(ceps::ast::Struct & s, F f){
         for (auto e : children(s)){
             f(e);
@@ -143,7 +135,7 @@ namespace ceps2openv2g{
     }
 
     static constexpr char const * field_names[] = {"physicalValue","boolValue","Name",
-    "byteValue","shortValue","intValue","stringValue","ServiceID","FreeService"};
+    "byteValue","shortValue","intValue","stringValue","ServiceID","FreeService","Exponent","Value"};
 
     static constexpr size_t physicalValue = 0;
     static constexpr size_t boolValue = 1;
@@ -154,7 +146,8 @@ namespace ceps2openv2g{
     static constexpr size_t stringValue = 6;
     static constexpr size_t ServiceID = 7;
     static constexpr size_t FreeService = 8;
-
+    static constexpr size_t Exponent = 9;
+    static constexpr size_t Value = 10;
 
     bool chain(node_t , MessageBuilder* ){
         return true;
@@ -444,8 +437,6 @@ namespace ceps2openv2g{
         return res;
     }
 
-
-
     //
     // iso2ServiceListType
     //
@@ -516,25 +507,12 @@ namespace ceps2openv2g{
     // iso2PhysicalValueType
     //
 
-    template<> iso2PhysicalValueType MessageBuilder::emit<iso2PhysicalValueType>(ceps::ast::Struct & msg){
-        iso2PhysicalValueType r{};
-        for_all_children(msg, [&](node_t e){
-            auto match_res = match_struct(e,"Exponent");
-            if (match_res) {
-                auto field = get_numerical_field<uint8_t>(as_struct_ref(e));
-                if (!field) return;
-                r.Exponent = *field;
-                return;
-            }
-            match_res = match_struct(e,"Value");
-            if (match_res) {
-                auto field = get_numerical_field<uint16_t>(as_struct_ref(e));
-                if (!field) return;
-                r.Value = *field;
-                return;
-            }
-        });
-        return r;
+    template <> bool MessageBuilder::filter<iso2PhysicalValueType> (iso2PhysicalValueType& r, node_t e){
+        using T = iso2PhysicalValueType;
+        auto res = chain(e,this,
+            fld<T,Exponent,decltype(r.Exponent)> {r.Exponent, r},fld<T,Value,decltype(r.Value)> {r.Value, r}
+        );
+        return res;
     }
 
     //
