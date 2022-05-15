@@ -144,6 +144,11 @@ v2g(
 					Name{"NameP1_4";};
 					shortValue{4;};
 				};
+				Parameter{
+					Name{"NameP1_4";};
+					stringValue{"ssss";};
+				};
+
 			};
 			ParameterSet{
 				ParameterSetID{

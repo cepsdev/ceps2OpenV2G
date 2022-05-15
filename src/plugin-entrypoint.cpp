@@ -84,14 +84,15 @@ namespace ceps2openv2g{
     ceps::ast::node_t plugin_entrypoint(ceps::ast::node_callparameters_t params);
 
     class MessageBuilder{
+        template <typename T> 
+            bool filter (T&, ceps::ast::node_t e);
 
-        template<typename T> T emit(ceps::ast::Struct & );
         template<typename T> void evse_prolog(T& r, ceps::ast::Struct & msg);
         template <typename T0, typename T1> size_t read_array(  ceps::ast::Struct & msg,
                                                              T1& r, 
                                                              string name);
         public:
-
+        template<typename T> T emit(ceps::ast::Struct & );
         std::uint8_t* build(ceps::ast::node_t data);
 
     };
@@ -102,9 +103,7 @@ namespace ceps2openv2g{
     template<> iso2SessionSetupReqType MessageBuilder::emit<iso2SessionSetupReqType>(ceps::ast::Struct & msg);
     template<> iso2SessionSetupResType MessageBuilder::emit<iso2SessionSetupResType>(ceps::ast::Struct & msg);
     template<> iso2ServiceListType MessageBuilder::emit<iso2ServiceListType>(ceps::ast::Struct & msg);
-
-    
-
+    template<> iso2PhysicalValueType MessageBuilder::emit<iso2PhysicalValueType>(ceps::ast::Struct & msg);
 
     template <typename F> void for_all_children(ceps::ast::Struct & s, F f){
         for (auto e : children(s)){
@@ -121,6 +120,151 @@ namespace ceps2openv2g{
         if (!ceps::ast::is<ceps::ast::Ast_node_kind::structdef>(e)) return {};
         if (what != ceps::ast::name(*ceps::ast::as_struct_ptr(e))) return {};        
         return *ceps::ast::as_struct_ptr(e) ;
+    }
+
+    template <typename T> optional<T> get_numerical_field(ceps::ast::Struct& msg){
+        if (children(msg).size() != 1) return {};
+        auto elem = children(msg)[0];
+        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
+            return value(as_int_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
+            return value(as_int64_ref(elem));
+        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
+            return value(as_double_ref(elem));
+        return {};    
+    }
+    
+    optional<string> get_string_field(ceps::ast::Struct& msg){
+        if (children(msg).size() != 1) return {};
+        auto elem = children(msg)[0];
+        if (is<ceps::ast::Ast_node_kind::string_literal>(elem))
+            return value(as_string_ref(elem));
+        return {};    
+    }
+
+    static constexpr char const * field_names[] = {"physicalValue","boolValue","Name",
+    "byteValue","shortValue","intValue","stringValue"};
+
+    static constexpr size_t physicalValue = 0;
+    static constexpr size_t boolValue = 1;
+    static constexpr size_t Name = 2;
+    static constexpr size_t byteValue = 3;
+    static constexpr size_t shortValue = 4;
+    static constexpr size_t intValue = 5;
+    static constexpr size_t stringValue = 6;
+
+    bool chain(node_t , MessageBuilder* ){
+        return true;
+    }
+
+    template<typename T, typename... Ts> 
+    bool chain(node_t e, MessageBuilder* b, T arg, Ts... args){
+        arg(e,b);
+        chain(e,b,args...);
+        return false;
+    }
+
+    template<typename T, size_t nm, typename V> struct fld{
+        V& v;
+        T& r;
+        fld(V& v,T& r): v{v}, r{r} { }
+        void operator () (node_t e, MessageBuilder* b){
+                if (match_struct(e,field_names[nm])){
+                    v = b->emit<V>(as_struct_ref(e));
+                }
+        }
+    };
+
+    template<typename T, size_t nm, typename V, typename W> struct fld2{
+        V& v;
+        T& r;
+        W w;
+        fld2(V& v,T& r, W w): v{v}, r{r}, w{w} { }
+        void operator () (node_t e, MessageBuilder* b){
+                if (match_struct(e,field_names[nm])){
+                    v = b->emit<V>(as_struct_ref(e));
+                    w();
+                }
+        }
+    };
+
+
+    template<typename T> 
+     T MessageBuilder::emit(ceps::ast::Struct & msg){
+        T r{};
+        for_all_children(msg, [&](node_t e){
+            filter(r,e);
+        });
+        return r;
+     }
+
+    template<> int MessageBuilder::emit<int>(ceps::ast::Struct & msg){
+        auto v = get_numerical_field<int>(msg);
+        if (v) return *v;
+        return 0;        
+    }
+
+    template<> uint8_t MessageBuilder::emit<uint8_t>(ceps::ast::Struct & msg){
+        auto v = get_numerical_field<uint8_t>(msg);
+        if (v) return *v;
+        return 0;        
+    }
+
+    template<> int8_t MessageBuilder::emit<int8_t>(ceps::ast::Struct & msg){
+        auto v = get_numerical_field<int8_t>(msg);
+        if (v) return *v;
+        return 0;        
+    }
+
+    template<> uint16_t MessageBuilder::emit<uint16_t>(ceps::ast::Struct & msg){
+        auto v = get_numerical_field<uint16_t>(msg);
+        if (v) return *v;
+        return 0;        
+    }
+
+    template<> int16_t MessageBuilder::emit<int16_t>(ceps::ast::Struct & msg){
+        auto v = get_numerical_field<int16_t>(msg);
+        if (v) return *v;
+        return 0;        
+    }
+
+    struct String_t{
+		exi_string_character_t characters[iso2ParameterType_Name_CHARACTERS_SIZE];
+		uint16_t charactersLen;
+	};
+
+    template<> String_t MessageBuilder::emit<String_t>(ceps::ast::Struct & msg){
+        String_t r{};
+        auto field_value = get_string_field(msg);
+        if (!field_value) return r;
+        strncpy(r.characters,field_value->c_str(), sizeof(r.characters - 1)); 
+        r.charactersLen = field_value->length();
+        return r;        
+    }
+
+    //
+    // iso2ParameterType
+    //
+
+    template <> bool MessageBuilder::filter<iso2ParameterType> (iso2ParameterType& r, node_t e){
+        using T = iso2ParameterType;
+        auto g1 = [&](){ r.physicalValue_isUsed = 1;};
+        auto g2 = [&](){ r.boolValue_isUsed = 1;};
+        auto g3 = [&](){ r.byteValue_isUsed = 1;};
+        auto g4 = [&](){ r.shortValue_isUsed = 1;};
+        auto g5 = [&](){ r.intValue_isUsed = 1;};
+        auto g6 = [&](){ r.stringValue_isUsed = 1;};
+
+        auto res = chain(e,this,
+            fld2<T,physicalValue,decltype(r.physicalValue), decltype(g1)> {r.physicalValue, r, g1},
+            fld2<T,byteValue,int8_t, decltype(g3)> {r.byteValue, r, g3},
+            fld2<T,shortValue,short, decltype(g4)> {r.shortValue, r, g4},
+            fld2<T,intValue,int, decltype(g5)> {r.intValue, r, g5},            
+            fld<T,Name,String_t> {(String_t&)r.Name, r},
+            fld2<T,boolValue,int, decltype(g2)> {r.boolValue, r, g2},
+            fld2<T,stringValue,String_t, decltype(g6)> {(String_t&)r.stringValue, r, g6}
+        );
+        return res;
     }
 
     optional<iso2responseCodeType> get_v2g_responsecode(ceps::ast::Struct& msg){
@@ -183,27 +327,6 @@ namespace ceps2openv2g{
         auto it = str2enum.find(name(elem));
         if (it == str2enum.end()) return {};
         return it->second;
-    }
-
-
-    template <typename T> optional<T> get_numerical_field(ceps::ast::Struct& msg){
-        if (children(msg).size() != 1) return {};
-        auto elem = children(msg)[0];
-        if (is<ceps::ast::Ast_node_kind::int_literal>(elem))
-            return value(as_int_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::long_literal>(elem))
-            return value(as_int64_ref(elem));
-        else if (is<ceps::ast::Ast_node_kind::float_literal>(elem))
-            return value(as_double_ref(elem));
-        return {};    
-    }
-    
-    optional<string> get_string_field(ceps::ast::Struct& msg){
-        if (children(msg).size() != 1) return {};
-        auto elem = children(msg)[0];
-        if (is<ceps::ast::Ast_node_kind::string_literal>(elem))
-            return value(as_string_ref(elem));
-        return {};    
     }
 
     template <typename T> void MessageBuilder::evse_prolog(T& r, ceps::ast::Struct & msg){
@@ -418,74 +541,6 @@ namespace ceps2openv2g{
                 auto field = get_numerical_field<uint16_t>(as_struct_ref(e));
                 if (!field) return;
                 r.Value = *field;
-                return;
-            }
-        });
-        return r;
-    }
-
-
-    //
-    // iso2ParameterType
-    //
-
-    template<> iso2ParameterType MessageBuilder::emit<iso2ParameterType>(ceps::ast::Struct & msg){
-        iso2ParameterType r{};
-        for_all_children(msg, [&](node_t e){
-            auto match_res = match_struct(e,"Name");
-            if (match_res) {
-                auto field_value = get_string_field(as_struct_ref(e));
-                if (!field_value) return;
-                strncpy(r.Name.characters,field_value->c_str(), sizeof(r.Name.characters - 1)); 
-                r.Name.charactersLen = field_value->length();
-                return;
-            }
-            match_res = match_struct(e,"boolValue");
-            if (match_res) {
-                auto field_value = get_numerical_field<int32_t>(as_struct_ref(e));
-                if (!field_value) return;
-                r.boolValue = *field_value;
-                r.boolValue_isUsed = 1;
-                return;
-            }            
-            match_res = match_struct(e,"byteValue");
-            if (match_res) {
-                auto field_value = get_numerical_field<int8_t>(as_struct_ref(e));
-                if (!field_value) return;
-                r.byteValue = *field_value;
-                r.byteValue_isUsed = 1;
-                return;
-            }            
-            match_res = match_struct(e,"shortValue");
-            if (match_res) {
-                auto field_value = get_numerical_field<int16_t>(as_struct_ref(e));
-                if (!field_value) return;
-                r.shortValue = *field_value;
-                r.shortValue_isUsed = 1;
-                return;
-            }            
-            match_res = match_struct(e,"intValue");
-            if (match_res) {
-                auto field_value = get_numerical_field<int32_t>(as_struct_ref(e));
-                if (!field_value) return;
-                r.intValue = *field_value;
-                r.intValue_isUsed = 1;
-                return;
-            }
-            match_res = match_struct(e,"physicalValue");
-            if (match_res) {
-                auto field_value = emit<iso2PhysicalValueType>(as_struct_ref(e));
-                r.physicalValue = field_value;
-                r.physicalValue_isUsed = 1;
-                return;
-            }
-            match_res = match_struct(e,"stringValue");
-            if (match_res) {
-                auto field_value = get_string_field(as_struct_ref(e));
-                if (!field_value) return;
-                strncpy(r.stringValue.characters, field_value->c_str(), sizeof(r.stringValue.characters));
-                r.stringValue.charactersLen = field_value->length();
-                r.stringValue_isUsed = 1;
                 return;
             }
         });
