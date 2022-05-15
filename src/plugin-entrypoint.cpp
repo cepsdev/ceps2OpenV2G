@@ -143,7 +143,7 @@ namespace ceps2openv2g{
     }
 
     static constexpr char const * field_names[] = {"physicalValue","boolValue","Name",
-    "byteValue","shortValue","intValue","stringValue"};
+    "byteValue","shortValue","intValue","stringValue","ServiceID","FreeService"};
 
     static constexpr size_t physicalValue = 0;
     static constexpr size_t boolValue = 1;
@@ -152,6 +152,9 @@ namespace ceps2openv2g{
     static constexpr size_t shortValue = 4;
     static constexpr size_t intValue = 5;
     static constexpr size_t stringValue = 6;
+    static constexpr size_t ServiceID = 7;
+    static constexpr size_t FreeService = 8;
+
 
     bool chain(node_t , MessageBuilder* ){
         return true;
@@ -433,27 +436,14 @@ namespace ceps2openv2g{
     // iso2ServiceType
     //
     
-
-    template<> iso2ServiceType MessageBuilder::emit<iso2ServiceType>(ceps::ast::Struct & msg){
-        iso2ServiceType r{};
-        for_all_children(msg, [&](node_t e){
-            auto match_res = match_struct(e,"ServiceID");
-            if (match_res) {
-                auto field = get_numerical_field<uint16_t>(as_struct_ref(e));
-                if (!field) return;
-                r.ServiceID = *field;
-                return;
-            }
-            match_res = match_struct(e,"FreeService");
-            if (match_res) {
-                auto field = get_numerical_field<int32_t>(as_struct_ref(e));
-                if (!field) return;
-                r.FreeService = *field;
-                return;
-            }
-        });
-        return r;
+    template <> bool MessageBuilder::filter<iso2ServiceType> (iso2ServiceType& r, node_t e){
+        using T = iso2ServiceType;
+        auto res = chain(e,this,
+            fld<T,ServiceID,decltype(r.ServiceID)> {r.ServiceID, r},fld<T,FreeService,decltype(r.FreeService)> {r.FreeService, r}
+        );
+        return res;
     }
+
 
 
     //
