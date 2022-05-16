@@ -1,0 +1,39 @@
+
+
+expression_a{
+    physicalValue{
+        Exponent {1;};
+        Value{22;};
+    };
+};
+
+test_result_to_ceps{
+    v2g(
+        physicalValue{
+            Exponent {1;};
+            Value{2;};
+        }
+    );
+};
+
+v2g_squared{
+    v2g(
+        v2g(
+        physicalValue{
+            Exponent {1;};
+            Value{2;};
+        }
+    ));
+};
+
+val result = symbolic_equality(
+    root.expression_a.content(),
+    root.v2g_squared.content()).diff.equal.content();
+
+if (result == 1) print("PASSED.\n");
+else {
+    print("FAILED: ");
+    print(symbolic_equality(
+    root.expression_a.content(),
+    root.v2g_squared.content()).diff.reason,"\n");
+}

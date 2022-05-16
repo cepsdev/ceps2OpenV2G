@@ -170,7 +170,7 @@ namespace ceps2openv2g{
         return it->second;
     }
 
-    std::uint8_t* MessageBuilder::build(ceps::ast::node_t data){
+    std::pair<std::uint8_t*,size_t> MessageBuilder::build(ceps::ast::node_t data){
         if (!is<Ast_node_kind::structdef>(data)) return {};
         auto& ceps_struct = *as_struct_ptr(data);
         if (name(ceps_struct)== "SessionSetupReq") 
@@ -237,6 +237,13 @@ namespace ceps2openv2g{
          emit<appHandAnonType_supportedAppProtocolReq>(ceps_struct);
         else if(name(ceps_struct)== "supportedAppProtocolRes")
          emit<appHandAnonType_supportedAppProtocolRes>(ceps_struct);
-        return nullptr;
+        else if(name(ceps_struct)== "physicalValue"){
+         auto r = emit<iso2PhysicalValueType>(ceps_struct);
+         auto res = new uint8_t[sizeof(r)];
+         memcpy(res,(uint8_t*)&r,sizeof(r));
+         return {res,sizeof(r)};         
+        }
+
+        return {nullptr,0};
     }
 }

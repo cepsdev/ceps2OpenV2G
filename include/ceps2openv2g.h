@@ -147,7 +147,9 @@ namespace ceps2openv2g{
                 });
         }
         template<typename T> T emit(ceps::ast::Struct & );
-        std::uint8_t* build(ceps::ast::node_t data);
+        template<typename T> node_t strct(T);
+
+        std::pair<std::uint8_t*,size_t> build(ceps::ast::node_t data);
     };
 
 

@@ -683,6 +683,9 @@ struct iso2CartesianCoordinatesType {
 /* Complex type name='urn:iso:15118:2:2016:MsgDataTypes,SubCertificatesType',  base type name='anyType',  content type='ELEMENT',  isAbstract='false',  hasTypeId='false',  final='0',  block='0',  particle='("urn:iso:15118:2:2016:MsgDataTypes":Certificate{1-4})',  derivedBy='RESTRICTION'.  */
 #define iso2SubCertificatesType_Certificate_BYTES_SIZE 800 /* XML schema facet maxLength for urn:iso:15118:2:2016:MsgDataTypes,certificateType is 800 */
 #define iso2SubCertificatesType_Certificate_ARRAY_SIZE 4
+
+
+
 struct iso2SubCertificatesType {
 	/* element: "urn:iso:15118:2:2016:MsgDataTypes":Certificate, urn:iso:15118:2:2016:MsgDataTypes,certificateType */
 	struct {

@@ -35,16 +35,30 @@ ceps::ast::node_t ceps2openv2g::plugin_entrypoint(ceps::ast::node_callparameters
     auto data = get_first_child(params);    
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     MessageBuilder msg_builder;
-    msg_builder.build(data);
-    //cout << "generator::plugin_entrypoint:\n";
 
-   // for(auto e : children(ceps_struct)){
-   //     cout <<"\t"<< * e << "\n";
-   // }
-   // cout <<"\n\n";
-    auto result = mk_struct("result");
-    children(*result).push_back(mk_int_node(42));
-    return result;
+    if (name(as_struct_ref(data)).substr(0,9) == ("open_v2g_")){
+        auto what = name(as_struct_ref(data)).substr(9);
+        if (what == "physicalValue"){
+            iso2PhysicalValueType m{};
+            size_t i = 0;
+            for(auto e: children(as_struct_ref(data))){
+                if (!is<Ast_node_kind::int_literal>(e)) continue;
+                auto v = value(as_int_ref(e));
+                ((uint8_t*)&m)[i++] = v;
+            }
+            return msg_builder.strct(m);
+        }        
+        return mk_int_node(0);
+    } else {    
+        auto msg = msg_builder.build(data);
+        auto result = mk_struct("open_v2g_"+name(as_struct_ref(data)));    
+        for(size_t i = 0; i < msg.second; ++i){
+            uint8_t ch = msg.first[i];
+            children(result).push_back(mk_int_node(ch));             
+        }
+        return result;
+    }
+    return nullptr;
 }
 
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
