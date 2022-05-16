@@ -169,4 +169,74 @@ namespace ceps2openv2g{
         if (it == str2enum.end()) return {};
         return it->second;
     }
+
+    std::uint8_t* MessageBuilder::build(ceps::ast::node_t data){
+        if (!is<Ast_node_kind::structdef>(data)) return {};
+        auto& ceps_struct = *as_struct_ptr(data);
+        if (name(ceps_struct)== "SessionSetupReq") 
+            emit<iso2SessionSetupReqType>(ceps_struct);
+        else if (name(ceps_struct)== "SessionSetupRes") 
+            emit<iso2SessionSetupResType>(ceps_struct);
+        else if(name(ceps_struct)== "ServiceDiscoveryReq")
+         emit<iso2ServiceDiscoveryReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "ServiceDiscoveryRes")
+         emit<iso2ServiceDiscoveryResType>(ceps_struct); 
+        else if(name(ceps_struct)== "ServiceDetailReq")
+         emit<iso2ServiceDetailReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "ServiceDetailRes")
+         emit<iso2ServiceDetailResType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentServiceSelectionReq")
+         emit<iso2PaymentServiceSelectionReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentServiceSelectionRes")
+         emit<iso2PaymentServiceSelectionResType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentDetailsReq")
+         emit<iso2PaymentDetailsReqType>(ceps_struct); 
+        else if(name(ceps_struct)== "PaymentDetailsRes")
+         emit<iso2PaymentDetailsResType>(ceps_struct);
+        else if(name(ceps_struct)== "AuthorizationReq")
+         emit<iso2AuthorizationReqType>(ceps_struct);
+        else if(name(ceps_struct)== "AuthorizationRes")
+         emit<iso2AuthorizationResType>(ceps_struct);
+        else if(name(ceps_struct)== "ChargeParameterDiscoveryReq")
+         emit<iso2ChargeParameterDiscoveryReqType>(ceps_struct);
+        else if(name(ceps_struct)== "ChargeParameterDiscoveryRes")
+         emit<iso2ChargeParameterDiscoveryResType>(ceps_struct);
+        else if(name(ceps_struct)== "PowerDeliveryReq")
+         emit<iso2PowerDeliveryReqType>(ceps_struct);
+        else if(name(ceps_struct)== "PowerDeliveryRes")
+         emit<iso2PowerDeliveryResType>(ceps_struct);
+        else if(name(ceps_struct)== "CableCheckReq")
+         emit<iso2CableCheckReqType>(ceps_struct);
+        else if(name(ceps_struct)== "CableCheckRes")
+         emit<iso2CableCheckResType>(ceps_struct);
+        else if(name(ceps_struct)== "PreChargeReq")
+         emit<iso2PreChargeReqType>(ceps_struct);
+        else if(name(ceps_struct)== "PreChargeRes")
+         emit<iso2PreChargeResType>(ceps_struct);
+        else if(name(ceps_struct)== "CurrentDemandReq")
+         emit<iso2CurrentDemandReqType>(ceps_struct);
+        else if(name(ceps_struct)== "CurrentDemandRes")
+         emit<iso2CurrentDemandResType>(ceps_struct);
+        // MeteringReceiptReq / MeteringReceiptRes
+        else if(name(ceps_struct)== "MeteringReceiptReq")
+         emit<iso2MeteringReceiptReqType>(ceps_struct);
+        else if(name(ceps_struct)== "MeteringReceiptRes")
+         emit<iso2MeteringReceiptResType>(ceps_struct);
+        // iso2WeldingDetectionReqType / iso2WeldingDetectionResType
+        else if(name(ceps_struct)== "WeldingDetectionReq")
+         emit<iso2WeldingDetectionReqType>(ceps_struct);
+        else if(name(ceps_struct)== "WeldingDetectionRes")
+         emit<iso2WeldingDetectionResType>(ceps_struct);        
+        // iso2SessionStopReqType/iso2SessionStopResType
+        else if(name(ceps_struct)== "SessionStopReq")
+         emit<iso2SessionStopReqType>(ceps_struct);
+        else if(name(ceps_struct)== "SessionStopRes")
+         emit<iso2SessionStopResType>(ceps_struct);
+        // supportedAppProtocolReq/supportedAppProtocolRes   
+        else if(name(ceps_struct)== "supportedAppProtocolReq")
+         emit<appHandAnonType_supportedAppProtocolReq>(ceps_struct);
+        else if(name(ceps_struct)== "supportedAppProtocolRes")
+         emit<appHandAnonType_supportedAppProtocolRes>(ceps_struct);
+        return nullptr;
+    }
 }

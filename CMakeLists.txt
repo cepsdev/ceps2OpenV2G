@@ -68,6 +68,36 @@ add_library(ceps2openV2G-plugin SHARED
            src/chargeparameterdiscoveryrestype.cpp
            src/wpt_evchargeparametertype.cpp
            src/relativetimeintervaltype.cpp
+           src/pmaxscheduleentrytype.cpp
+           src/minimumpmaxrequesttype.cpp
+           src/pmaxscheduletype.cpp
+           src/sascheduletupletype.cpp
+           src/saschedulelisttype.cpp
+           src/evseenergytransferparametertype.cpp
+           src/ac_evsechargeparametertype.cpp
+           src/dc_evsechargeparametertype.cpp
+           src/ac_evsebidirectionalparametertype.cpp
+           src/wpt_evsechargeparametertype.cpp
+           src/chargeprogresstype.cpp
+           src/evoperationtype.cpp
+           src/chargingprofiletype.cpp
+           src/powerdeliveryreqtype.cpp
+           src/powerdeliveryrestype.cpp
+           src/cablecheckreqtype.cpp
+           src/cablecheckrestype.cpp
+           src/prechargereqtype.cpp
+           src/prechargerestype.cpp
+           src/meteringreceiptreqtype.cpp
+           src/meteringreceiptrestype.cpp
+           src/weldingdetectionreqtype.cpp
+           src/weldingdetectionrestype.cpp
+           src/chargingsessiontype.cpp
+           src/sessionstopreqtype.cpp
+           src/sessionstoprestype.cpp
+           src/apphandappprotocoltype.cpp
+           src/apphandanontype_supportedappprotocolreq.cpp
+           src/apphandresponsecodetype.cpp
+           src/apphandanontype_supportedappprotocolres.cpp
            )
 
 target_link_libraries(ceps2openV2G-plugin cepscore sctp)
