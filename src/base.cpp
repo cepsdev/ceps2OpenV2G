@@ -242,6 +242,11 @@ namespace ceps2openv2g{
          auto res = new uint8_t[sizeof(r)];
          memcpy(res,(uint8_t*)&r,sizeof(r));
          return {res,sizeof(r)};         
+        } else if (name(ceps_struct)== "AC_EVBidirectionalParameter" ){
+         auto r = emit<iso2AC_EVBidirectionalParameterType>(ceps_struct);
+         auto res = new uint8_t[sizeof(r)];
+         memcpy(res,(uint8_t*)&r,sizeof(r));
+         return {res,sizeof(r)};         
         }
 
         return {nullptr,0};

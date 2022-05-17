@@ -36,19 +36,29 @@ ceps::ast::node_t ceps2openv2g::plugin_entrypoint(ceps::ast::node_callparameters
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     MessageBuilder msg_builder;
 
+    auto fill_struct = [](uint8_t* m, size_t n, ceps::ast::Struct& s){
+        size_t i = 0;
+        for(auto e: children(s)){
+            if (i >= n) break;
+            if (!is<Ast_node_kind::int_literal>(e)) continue;
+            auto v = value(as_int_ref(e));
+            m[i++] = v;
+        }
+    };
+
     if (name(as_struct_ref(data)).substr(0,9) == ("open_v2g_")){
         auto what = name(as_struct_ref(data)).substr(9);
+        node_t result = nullptr;
         if (what == "physicalValue"){
             iso2PhysicalValueType m{};
-            size_t i = 0;
-            for(auto e: children(as_struct_ref(data))){
-                if (!is<Ast_node_kind::int_literal>(e)) continue;
-                auto v = value(as_int_ref(e));
-                ((uint8_t*)&m)[i++] = v;
-            }
-            return msg_builder.strct(m);
-        }        
-        return mk_int_node(0);
+            fill_struct((uint8_t*)&m, sizeof(m), as_struct_ref(data));
+            result = msg_builder.strct(m);
+        } else if (what == "AC_EVBidirectionalParameter"){
+            iso2AC_EVBidirectionalParameterType m{};
+            fill_struct((uint8_t*)&m, sizeof(m), as_struct_ref(data));
+            result = msg_builder.strct(m);
+        }
+        return result;
     } else {    
         auto msg = msg_builder.build(data);
         auto result = mk_struct("open_v2g_"+name(as_struct_ref(data)));    
