@@ -6,7 +6,7 @@
 - Transformation cepS => OpenV2G (100%)
 - Transformation OpenV2G => cepS (5%)
 - Feature complete in approx. 5 days.
-- 
+
 ## How to install
 - Install ceps (https://github.com/cepsdev/machines4ceps)
 - Clone this repo. Assumption: repo ends up in the same directory which also contains ceps, machines4ceps, log4ceps.
