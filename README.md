@@ -1,4 +1,7 @@
 # ceps2OpenV2G
+## What it is for
+*OpenV2G* [http://openv2g.sourceforge.net/] is the basis of many ISO 15118-2 implementations on the market today. *cepS* [https://github.com/cepsdev/machines4ceps] is a tool to write specifications and tests in a modern, i.e. formal and test-driven, way (cepS := reverse(Spec)). *ceps2OpenV2G* is a plugin which enables implementors of OpenV2G based solutions to use the feature-rich cepS framework for specification, testing and simulation.
+## How to install
 - Install ceps (https://github.com/cepsdev/machines4ceps)
 - Clone this repo. Assumption: repo ends up in the same directory which also contains ceps, machines4ceps, log4ceps.
 - If necessary edit build_all.sh/rebuild_all.sh, i.e. set the values of CEPSCORE, MACHINES4CEPS, LOG4CEPS according to your configuration.
