@@ -24,6 +24,21 @@ namespace ceps2openv2g{
     // iso2ChargeParameterDiscoveryReqType
     //
 
+
+    template<> node_t MessageBuilder::strct(iso2ChargeParameterDiscoveryReqType v){
+        return rec("ChargeParameterDiscoveryReq",
+            v.MaxSupportingPoints_isUsed == 1 ? rec("MaxSupportingPoints",v.MaxSupportingPoints):unused,
+            rec("EVEnergyTransferParameter",v.EVEnergyTransferParameter),
+            v.AC_EVChargeParameter_isUsed == 1 ? rec("AC_EVChargeParameter",v.AC_EVChargeParameter):unused,
+            v.AC_EVBidirectionalParameter_isUsed == 1 ? rec("AC_EVBidirectionalParameter",v.AC_EVBidirectionalParameter):unused,
+            v.DC_EVChargeParameter_isUsed == 1 ? rec("DC_EVChargeParameter",v.DC_EVChargeParameter):unused,
+            v.DC_EVBidirectionalParameter_isUsed == 1 ? rec("DC_EVBidirectionalParameter",v.DC_EVBidirectionalParameter):unused,
+            v.WPT_EVChargeParameter_isUsed == 1 ? rec("iWPT_EVChargeParameter",v.WPT_EVChargeParameter):unused,
+            v.MinimumPMaxRequest_isUsed == 1 ? rec("MinimumPMaxRequest",v.MinimumPMaxRequest):unused
+        );    
+    }
+
+
     template<> iso2ChargeParameterDiscoveryReqType MessageBuilder::emit<iso2ChargeParameterDiscoveryReqType>(ceps::ast::Struct & msg){
         iso2ChargeParameterDiscoveryReqType r{};
         for_all_children(msg, [&](node_t e){            
