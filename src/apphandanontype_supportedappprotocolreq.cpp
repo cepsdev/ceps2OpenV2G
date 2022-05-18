@@ -23,6 +23,11 @@ namespace ceps2openv2g{
     // appHandAnonType_supportedAppProtocolReq
     //
 
+    template<> node_t MessageBuilder::strct(appHandAnonType_supportedAppProtocolReq v){
+        return rec("appHandAnonType_supportedAppProtocolReq",
+            rec("AppProtocol",v.AppProtocol)
+        );    
+    }
     template<> appHandAnonType_supportedAppProtocolReq MessageBuilder::emit<appHandAnonType_supportedAppProtocolReq>(ceps::ast::Struct & msg){
         appHandAnonType_supportedAppProtocolReq r{};
         r.AppProtocol.arrayLen = 

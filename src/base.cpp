@@ -308,4 +308,13 @@ namespace ceps2openv2g{
         auto r = mk_struct(name);
         return r;
     }
+    node_struct_t MessageBuilder::rec(string name, AppProtocol_t v){
+        auto r = mk_struct(name);
+        for(auto it = v.array; it != v.array + v.arrayLen; ++it)
+        {
+            children(*r).push_back(rec("appHandAppProtocol",*it));
+        }
+        return r;
+    }
+
 }

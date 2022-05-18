@@ -97,6 +97,11 @@ namespace ceps2openv2g{
 		uint16_t arrayLen;
 	};
 
+    struct AppProtocol_t{
+		struct appHandAppProtocolType array[appHandAnonType_supportedAppProtocolReq_AppProtocol_ARRAY_SIZE];
+		uint16_t arrayLen;
+	} ;
+
     optional< pair<string,ceps::ast::Struct> > match_struct(node_t e);
     optional< ceps::ast::Struct > match_struct(node_t e, string what);
     template <typename F> void for_all_children(ceps::ast::Struct & s, F f){
@@ -164,6 +169,9 @@ namespace ceps2openv2g{
         node_struct_t rec(string name, uint64_t v);
         node_struct_t rec(string name, string v);
         node_struct_t rec(string name);
+
+        node_struct_t rec(string name, AppProtocol_t);
+
 
         template<typename T> node_struct_t rec(string name, T v){
             return rec(name,children(as_struct_ref(strct<T>(v))));
