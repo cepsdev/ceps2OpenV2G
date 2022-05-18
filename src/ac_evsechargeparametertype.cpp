@@ -23,6 +23,13 @@ namespace ceps2openv2g{
     // iso2AC_EVSEChargeParameterType
     //
 
+    template<> node_t MessageBuilder::strct(iso2AC_EVSEChargeParameterType v){
+        return rec("AC_EVSEChargeParameter",
+            rec("EVSEMaximumChargeCurrent",v.EVSEMaximumChargeCurrent),
+            rec("EVSENominalVoltage",v.EVSENominalVoltage),
+            rec("EVSENominalFrequency",v.EVSENominalFrequency)
+        );    
+    }
     template<> iso2AC_EVSEChargeParameterType MessageBuilder::emit<iso2AC_EVSEChargeParameterType>(ceps::ast::Struct & msg){
         iso2AC_EVSEChargeParameterType r{};
         for_all_children(msg, [&](node_t e){            
