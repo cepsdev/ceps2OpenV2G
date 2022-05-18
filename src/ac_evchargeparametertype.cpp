@@ -23,6 +23,20 @@ namespace ceps2openv2g{
     // iso2AC_EVChargeParameterType
     //
 
+    template<> node_t MessageBuilder::strct(iso2AC_EVChargeParameterType v){
+        return rec("AC_EVChargeParameter",
+            rec("DepartureTime",v.DepartureTime),
+            rec("EVMaximumChargePower",v.EVMaximumChargePower),
+            rec("EVMaximumChargeCurrent",v.EVMaximumChargeCurrent),
+            rec("EVMinimumChargeCurrent",v.EVMinimumChargeCurrent),
+            v.EVTargetEnergyRequest_isUsed == 1 ? rec("EVTargetEnergyRequest",v.EVTargetEnergyRequest):unused,
+            v.EVMaximumEnergyRequest_isUsed == 1 ? rec("EVMaximumEnergyRequest",v.EVMaximumEnergyRequest):unused,
+            v.EVMinimumEnergyRequest_isUsed == 1 ? rec("EVMinimumEnergyRequest",v.EVMinimumEnergyRequest):unused,
+            rec("EVMaximumVoltage",v.EVMaximumVoltage)
+        );    
+    }
+
+
     template<> iso2AC_EVChargeParameterType MessageBuilder::emit<iso2AC_EVChargeParameterType>(ceps::ast::Struct & msg){
         iso2AC_EVChargeParameterType r{};
         for_all_children(msg, [&](node_t e){            

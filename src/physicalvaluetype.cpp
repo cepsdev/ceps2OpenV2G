@@ -22,7 +22,6 @@ namespace ceps2openv2g{
     //
     // iso2PhysicalValueType
     //
-
     template <> bool MessageBuilder::filter<iso2PhysicalValueType> (iso2PhysicalValueType& r, node_t e){
         using T = iso2PhysicalValueType;
         auto res = chain(e,this,
@@ -32,14 +31,9 @@ namespace ceps2openv2g{
     }
 
     template<> node_t MessageBuilder::strct(iso2PhysicalValueType v){
-        using namespace ceps::interpreter;
-        auto r = mk_struct("physicalValue");
-        auto e = mk_struct("Exponent");
-        children(*e).push_back(mk_int_node(v.Exponent));
-        children(*r).push_back(e);
-        e = mk_struct("Value");
-        children(*e).push_back(mk_int_node(v.Value));
-        children(*r).push_back(e); 
-        return r;
+        return rec("physicalValue",
+            rec("Exponent",v.Exponent),
+            rec("Value",v.Value)
+        );
     }
 }

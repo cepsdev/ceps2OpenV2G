@@ -91,4 +91,18 @@ namespace ceps2openv2g{
         });    
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2AC_EVBidirectionalParameterType v){
+        return rec("AC_EVBidirectionalParameter",
+            rec("DepartureTime",v.DepartureTime),
+            rec("EVMaximumChargePower",v.EVMaximumChargePower),
+            rec("EVMaximumChargeCurrent",v.EVMaximumChargeCurrent),
+            rec("EVTargetEnergyRequest",v.EVTargetEnergyRequest),
+            v.EVMaximumEnergyRequest_isUsed == 1 ? rec("EVMaximumEnergyRequest",v.EVMaximumEnergyRequest):unused,
+            v.EVMinimumEnergyRequest_isUsed == 1 ? rec("EVMinimumEnergyRequest",v.EVMinimumEnergyRequest):unused,
+            rec("EVMaximumVoltage",v.EVMaximumVoltage),
+            rec("EVMaximumDischargePower",v.EVMaximumDischargePower),
+            rec("EVMaximumDischargeCurrent",v.EVMaximumDischargeCurrent),
+            rec("EVMinimumDischargeCurrent",v.EVMinimumDischargeCurrent)
+        );    
+    }
 }

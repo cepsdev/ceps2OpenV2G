@@ -251,4 +251,61 @@ namespace ceps2openv2g{
 
         return {nullptr,0};
     }
+
+
+    node_struct_t MessageBuilder::rec(string name, int v){
+        auto r = mk_struct(name); auto r2 = mk_int_node(v); children(*r).push_back(r2);
+        return r;    
+   }
+
+    node_struct_t MessageBuilder::rec(string name, int8_t v)
+    {
+        return rec(name,(int)v);
+    }
+   
+    node_struct_t MessageBuilder::rec(string name, uint8_t v)
+    {
+        return rec(name,(int)v);
+    }
+
+    node_struct_t MessageBuilder::rec(string name, int16_t v)
+    {
+        return rec(name,(int)v);
+    }
+
+    node_struct_t MessageBuilder::rec(string name, uint16_t v)
+    {
+        return rec(name,(int)v);
+    }
+
+    node_struct_t MessageBuilder::rec(string name, int64_t v){
+        auto r = mk_struct(name); auto r2 = mk_int64_node(v); children(*r).push_back(r2);
+        return r;    
+    }
+    node_struct_t MessageBuilder::rec(string name, uint64_t v){
+        auto r = mk_struct(name); auto r2 = mk_int64_node(v); children(*r).push_back(r2);
+        return r;    
+    }
+
+   node_struct_t MessageBuilder::rec(string name, string v){
+        auto r = mk_struct(name); auto r2 = mk_string(v); children(*r).push_back(r2);
+        return r;    
+   }
+   node_struct_t MessageBuilder::rec(string name, node_struct_t e1){
+        auto r = mk_struct(name);
+        if (e1) children(*r).push_back(e1);
+        return r;
+    }
+
+    node_struct_t MessageBuilder::rec(string name, vector<node_t> nodes)
+    {
+        auto r = mk_struct(name);
+        children(*r) = nodes;
+        return r;
+    }
+
+   node_struct_t MessageBuilder::rec(string name){
+        auto r = mk_struct(name);
+        return r;
+    }
 }

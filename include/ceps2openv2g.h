@@ -140,6 +140,7 @@ namespace ceps2openv2g{
                     }
                     match_res = match_struct(e,"EVSEStatus");
                     if (match_res) {
+
                         r.EVSEStatus_isUsed = 1;
                         r.EVSEStatus = emit<iso2EVSEStatusType>(ceps::ast::as_struct_ref(e));
                         return;
@@ -148,8 +149,31 @@ namespace ceps2openv2g{
         }
         template<typename T> T emit(ceps::ast::Struct & );
         template<typename T> node_t strct(T);
-
         std::pair<std::uint8_t*,size_t> build(ceps::ast::node_t data);
+//@TODO: Rewrite stuff below using variadics
+        static constexpr node_struct_t unused = nullptr;
+
+        node_struct_t rec(string name, node_struct_t e1);
+        node_struct_t rec(string name, vector<node_t> nodes);
+        node_struct_t rec(string name, int v);
+        node_struct_t rec(string name, int8_t v);
+        node_struct_t rec(string name, uint8_t v);
+        node_struct_t rec(string name, int16_t v);
+        node_struct_t rec(string name, uint16_t v);
+        node_struct_t rec(string name, int64_t v);
+        node_struct_t rec(string name, uint64_t v);
+        node_struct_t rec(string name, string v);
+        node_struct_t rec(string name);
+
+        template<typename T> node_struct_t rec(string name, T v){
+            return rec(name,children(as_struct_ref(strct<T>(v))));
+        }
+
+        template<typename T, typename... Ts> node_struct_t rec(string name, T a1, Ts... rest){
+            auto r = rec(name,rest...);
+            if (a1) children(*r).insert(children(*r).begin(),a1);
+            return r;
+        }
     };
 
 
@@ -229,4 +253,8 @@ namespace ceps2openv2g{
 
     optional<iso2responseCodeType> get_v2g_responsecode(ceps::ast::Struct&);
     optional<iso2EVSENotificationType> get_v2g_EVSENotification(ceps::ast::Struct&);
+
+
 }
+
+ 
