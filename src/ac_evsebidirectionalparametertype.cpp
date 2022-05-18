@@ -22,6 +22,14 @@ namespace ceps2openv2g{
     //
     // iso2AC_EVSEBidirectionalParameterType
     //
+    template<> node_t MessageBuilder::strct(iso2AC_EVSEBidirectionalParameterType v){
+        return rec("AC_EVSEBidirectionalParameter",
+            rec("EVSEMaximumChargeCurrent",v.EVSEMaximumChargeCurrent),
+            rec("EVSENominalVoltage",v.EVSENominalVoltage),
+            rec("EVSENominalFrequency",v.EVSENominalFrequency),
+            rec("EVSEMaximumDischargeCurrent",v.EVSEMaximumDischargeCurrent)
+        );    
+    }
 
     template<> iso2AC_EVSEBidirectionalParameterType MessageBuilder::emit<iso2AC_EVSEBidirectionalParameterType>(ceps::ast::Struct & msg){
         iso2AC_EVSEBidirectionalParameterType r{};
