@@ -24,6 +24,20 @@ namespace ceps2openv2g{
     // iso2CurrentDemandReqType
     //
 
+    template<> node_t MessageBuilder::strct(iso2CurrentDemandReqType v){
+        return rec("CurrentDemandReq",
+            rec("EVTargetEnergyRequest",v.EVTargetEnergyRequest),
+            v.EVMaximumEnergyRequest_isUsed == 1 ? rec("EVMaximumEnergyRequest",v.EVMaximumEnergyRequest):unused,
+            v.EVMinimumEnergyRequest_isUsed == 1 ? rec("EVMinimumEnergyRequest",v.EVMinimumEnergyRequest):unused,
+            v.DisplayParameters_isUsed == 1 ? rec("DisplayParameters",v.DisplayParameters):unused,
+            rec("EVTargetCurrent",v.EVTargetCurrent),
+            rec("EVTargetVoltage",v.EVTargetVoltage),
+            v.EVMaximumCurrent_isUsed == 1 ? rec("EVMaximumCurrent",v.EVMaximumCurrent):unused,
+            v.EVMaximumPower_isUsed == 1 ? rec("EVMaximumPower",v.EVMaximumPower):unused,
+            v.EVMaximumVoltage_isUsed == 1 ? rec("EVMaximumVoltage",v.EVMaximumVoltage):unused           
+        );    
+    }    
+
     template<> iso2CurrentDemandReqType MessageBuilder::emit<iso2CurrentDemandReqType>(ceps::ast::Struct & msg){
         iso2CurrentDemandReqType r{};
         for_all_children(msg, [&](node_t e){            

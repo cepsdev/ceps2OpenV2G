@@ -26,14 +26,16 @@ namespace ceps2openv2g{
 
     template<> node_t MessageBuilder::strct(iso2ChargeParameterDiscoveryResType v){
         return rec("ChargeParameterDiscoveryReq",
-            v.MaxSupportingPoints_isUsed == 1 ? rec("MaxSupportingPoints",v.MaxSupportingPoints):unused,
-            rec("EVEnergyTransferParameter",v.EVEnergyTransferParameter),
-            v.AC_EVChargeParameter_isUsed == 1 ? rec("AC_EVChargeParameter",v.AC_EVChargeParameter):unused,
-            v.AC_EVBidirectionalParameter_isUsed == 1 ? rec("AC_EVBidirectionalParameter",v.AC_EVBidirectionalParameter):unused,
-            v.DC_EVChargeParameter_isUsed == 1 ? rec("DC_EVChargeParameter",v.DC_EVChargeParameter):unused,
-            v.DC_EVBidirectionalParameter_isUsed == 1 ? rec("DC_EVBidirectionalParameter",v.DC_EVBidirectionalParameter):unused,
-            v.WPT_EVChargeParameter_isUsed == 1 ? rec("iWPT_EVChargeParameter",v.WPT_EVChargeParameter):unused,
-            v.MinimumPMaxRequest_isUsed == 1 ? rec("MinimumPMaxRequest",v.MinimumPMaxRequest):unused
+            rec("ResponseCode",v.ResponseCode),
+            v.EVSEStatus_isUsed == 1 ? rec("EVSEStatus",v.EVSEStatus):unused,
+            rec("EVSEProcessing",v.EVSEProcessing),
+            rec("SAScheduleList",v.SAScheduleList),            
+            v.EVSEEnergyTransferParameter_isUsed == 1 ? rec("EVSEEnergyTransferParameter",v.EVSEEnergyTransferParameter):unused,
+            v.AC_EVSEChargeParameter_isUsed == 1 ? rec("AC_EVSEChargeParameter",v.AC_EVSEChargeParameter):unused,
+            v.AC_EVSEBidirectionalParameter_isUsed == 1 ? rec("AC_EVSEBidirectionalParameter",v.AC_EVSEBidirectionalParameter):unused,
+            v.DC_EVSEChargeParameter_isUsed == 1 ? rec("DC_EVSEChargeParameter",v.DC_EVSEChargeParameter):unused,
+            v.DC_EVSEBidirectionalParameter_isUsed == 1 ? rec("DC_EVSEBidirectionalParameter",v.DC_EVSEBidirectionalParameter):unused,
+            v.WPT_EVSEChargeParameter_isUsed == 1 ? rec("WPT_EVSEChargeParameter",v.WPT_EVSEChargeParameter):unused
         );    
     }
 

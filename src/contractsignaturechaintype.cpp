@@ -30,6 +30,14 @@ namespace ceps2openv2g{
     // ContractSignatureCertChain
     //
 
+    template<> node_t MessageBuilder::strct(iso2CertificateChainType v){
+        return rec("ContractSignatureCertChain",
+            rec("Id",v.Id),
+            rec("Certificate",v.Certificate),
+            rec("SubCertificates",v.SubCertificates)
+        );    
+    }  
+
     template<> iso2CertificateChainType MessageBuilder::emit<iso2CertificateChainType>(ceps::ast::Struct & msg){
         iso2CertificateChainType r{};
         for_all_children(msg, [&](node_t e){

@@ -23,6 +23,24 @@ namespace ceps2openv2g{
     // iso2CurrentDemandResType
     //
 
+    template<> node_t MessageBuilder::strct(iso2CurrentDemandResType v){
+        return rec("CurrentDemandRes",
+
+            rec("ResponseCode",v.ResponseCode),
+            v.EVSEStatus_isUsed == 1 ? rec("EVSEStatus",v.EVSEStatus):unused,
+            rec("EVSEPresentCurrent",v.EVSEPresentCurrent),
+            rec("EVSEPresentVoltage",v.EVSEPresentVoltage),
+            rec("EVSEPowerLimitAchieved",v.EVSEPowerLimitAchieved),
+            rec("EVSECurrentLimitAchieved",v.EVSECurrentLimitAchieved),
+            rec("EVSEVoltageLimitAchieved",v.EVSEVoltageLimitAchieved),
+            v.EVSEStatus_isUsed == 1 ? rec("EVSEStatus",v.EVSEStatus):unused,
+
+            rec("EVSEMaximumPower",v.EVSEMaximumPower)
+                //EVSEMaximumCurrent
+        );    
+    }    
+
+
     template<> iso2CurrentDemandResType MessageBuilder::emit<iso2CurrentDemandResType>(ceps::ast::Struct & msg){
         iso2CurrentDemandResType r{};
         evse_prolog(r,msg);
