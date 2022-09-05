@@ -35,4 +35,9 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2PowerDeliveryResType v){
+        return rec("PowerDeliveryResType",
+            rec("EVSEProcessing",v.EVSEProcessing)
+        );    
+    }
 }

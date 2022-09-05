@@ -53,4 +53,12 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2PowerDeliveryReqType v){
+        return rec("PowerDeliveryReqType",
+            rec("ChargeProgress",v.ChargeProgress),
+            v.EVOperation_isUsed == 1? rec("EVOperation",v.EVOperation):unused,
+            rec("SAScheduleTupleID",v.SAScheduleTupleID),
+            v.ChargingProfile_isUsed == 1 ? rec("ChargingProfile",v.ChargingProfile):unused
+        );    
+    }
 }

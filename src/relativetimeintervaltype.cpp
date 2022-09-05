@@ -44,4 +44,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2RelativeTimeIntervalType v){
+        return rec("RelativeTimeIntervalType",
+            rec("Start",v.start),
+            v.duration_isUsed == 1? rec("duration",v.duration):unused
+        );    
+    }
 }

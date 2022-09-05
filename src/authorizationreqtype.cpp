@@ -44,4 +44,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2AuthorizationReqType v){
+        return rec("AuthorizationReqType",
+            rec("Id",v.Id),
+            v.GenChallenge_isUsed == 1? rec("GenChallenge",v.GenChallenge):unused
+        );    
+    }
 }

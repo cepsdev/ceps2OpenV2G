@@ -87,4 +87,19 @@ namespace ceps2openv2g{
         });
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2DC_EVSEBidirectionalParameterType v){
+        return rec("EVSEBidirectionalParameterType",
+            rec("EVSEMaximumChargePower",v.EVSEMaximumChargePower),
+            rec("EVMaximumChargeCurrent",v.EVSEMaximumChargeCurrent),
+            rec("EVSEMinimumChargeCurrent",v.EVSEMinimumChargeCurrent),
+            rec("EVSEMaximumVoltage",v.EVSEMaximumVoltage),
+            rec("EVSEMinimumVoltage",v.EVSEMinimumVoltage),
+            v.EVSECurrentRegulationTolerance_isUsed == 1? rec("EVSECurrentRegulationTolerance",v.EVSECurrentRegulationTolerance):unused,
+            rec("EVSEPeakCurrentRipple",v.EVSEPeakCurrentRipple),
+            v.EVSEEnergyToBeDelivered_isUsed == 1 ? rec("EVSEEnergyToBeDelivered",v.EVSEEnergyToBeDelivered):unused,
+            rec("EVSEMaximumDischargePower",v.EVSEMaximumDischargePower),
+            rec("EVSEMaximumDischargeCurrent",v.EVSEMaximumDischargeCurrent),
+            rec("EVSEMinimumDischargeCurrent",v.EVSEMinimumDischargeCurrent)
+        );    
+    }
 }

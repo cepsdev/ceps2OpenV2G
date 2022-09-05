@@ -26,7 +26,7 @@ namespace ceps2openv2g{
     template<> iso2SelectedServiceType MessageBuilder::emit<iso2SelectedServiceType>(ceps::ast::Struct & msg){
         iso2SelectedServiceType r{};
         for_all_children(msg, [&] (node_t e){
-            auto match_res = match_struct(e,"ServciceID");
+            auto match_res = match_struct(e,"ServiceID");
             if (match_res) {
                 auto field_value = get_numerical_field<uint16_t>(as_struct_ref(e));
                 if (!field_value) return;
@@ -42,5 +42,11 @@ namespace ceps2openv2g{
             }            
         });
         return r;
+    }
+    template<> node_t MessageBuilder::strct(iso2SelectedServiceType v){
+        return rec("SelectedServiceType",
+            rec("ServiceID",v.ServiceID),
+            rec("ParameterSetID",v.ParameterSetID)
+        );    
     }
 }

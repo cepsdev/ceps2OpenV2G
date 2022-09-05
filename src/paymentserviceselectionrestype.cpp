@@ -28,4 +28,8 @@ namespace ceps2openv2g{
         evse_prolog(r,msg);        
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2PaymentServiceSelectionResType v){
+        return rec("PaymentServiceSelectionResType"
+        );    
+    }
 }

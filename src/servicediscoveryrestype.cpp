@@ -53,4 +53,11 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2ServiceDiscoveryResType v){
+        return rec("ServiceDiscoveryResType",
+            rec("PaymentOptionList",v.PaymentOptionList),
+            rec("EnergyTransferServiceList",v.EnergyTransferServiceList),
+            v.VASList_isUsed == 1? rec("VASList",v.VASList):unused
+        );    
+    }
 }

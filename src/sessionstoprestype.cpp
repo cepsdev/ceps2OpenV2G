@@ -28,4 +28,9 @@ namespace ceps2openv2g{
         evse_prolog(r,msg);
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2SessionStopResType v){
+        return rec("SessionStopResType"
+          
+        ); 
+    }
 }

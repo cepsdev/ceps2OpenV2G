@@ -28,5 +28,10 @@ namespace ceps2openv2g{
         r.ProfileEntry.arrayLen = 
             read_array<iso2PMaxScheduleEntryType>(msg, r.ProfileEntry, string{"ProfileEntry"});
         return r;
+    }
+     template<> node_t MessageBuilder::strct(iso2ChargingProfileType v){
+        return rec("ChargingProfileType",
+            rec("ProfileEntry",v.ProfileEntry)
+        );    
     }    
 }

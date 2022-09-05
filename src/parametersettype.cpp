@@ -35,5 +35,11 @@ namespace ceps2openv2g{
             }            
         });
         return r;
-    }    
+    }
+    template<> node_t MessageBuilder::strct(iso2ParameterSetType v){
+        return rec("ParameterSetType",
+            rec("Parameter",v.Parameter),
+            rec("ParameterSetID",v.ParameterSetID)
+        );
+    }       
 }

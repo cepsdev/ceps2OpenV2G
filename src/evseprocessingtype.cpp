@@ -39,4 +39,9 @@ namespace ceps2openv2g{
         });
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2EVSEProcessingType v){
+        return rec("EVSEProcessingType"
+           // rec("v2gEVSEProcessingType",v.str2enum)
+        );    
+    }
 }

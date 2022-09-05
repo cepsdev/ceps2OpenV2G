@@ -43,3 +43,14 @@ template <> bool ceps2openv2g::MessageBuilder::filter<iso2ParameterType> (iso2Pa
     );
     return res;
 }
+template<> ceps2openv2g::node_t ceps2openv2g::MessageBuilder::strct(iso2ParameterType v){
+        return rec("ParameterType",
+            v.physicalValue_isUsed == 1? rec("physicalValue",v.physicalValue):unused,
+            v.boolValue_isUsed == 1 ? rec("boolValue",v.boolValue):unused,
+            v.byteValue_isUsed == 1 ? rec("byteValue",v.byteValue):unused,
+            rec("Name",v.Name),
+            v.shortValue_isUsed == 1 ? rec("shortValue",v.shortValue):unused,
+            v.intValue_isUsed == 1 ? rec("intValue",v.intValue):unused,
+            v.stringValue_isUsed == 1 ? rec("stringValue",v.stringValue):unused
+        );    
+    }

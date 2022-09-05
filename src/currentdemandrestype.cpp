@@ -27,16 +27,18 @@ namespace ceps2openv2g{
         return rec("CurrentDemandRes",
 
             rec("ResponseCode",v.ResponseCode),
-            v.EVSEStatus_isUsed == 1 ? rec("EVSEStatus",v.EVSEStatus):unused,
             rec("EVSEPresentCurrent",v.EVSEPresentCurrent),
             rec("EVSEPresentVoltage",v.EVSEPresentVoltage),
             rec("EVSEPowerLimitAchieved",v.EVSEPowerLimitAchieved),
             rec("EVSECurrentLimitAchieved",v.EVSECurrentLimitAchieved),
             rec("EVSEVoltageLimitAchieved",v.EVSEVoltageLimitAchieved),
-            v.EVSEStatus_isUsed == 1 ? rec("EVSEStatus",v.EVSEStatus):unused,
-
-            rec("EVSEMaximumPower",v.EVSEMaximumPower)
-                //EVSEMaximumCurrent
+            v.EVSEMaximumPower_isUsed == 1 ? rec("EVSEMaximumPower",v.EVSEMaximumPower):unused,
+            v.EVSEMaximumCurrent_isUsed == 1 ? rec("EVSEMaximumCurrent",v.EVSEMaximumCurrent):unused,
+            v.EVSEMaximumVoltage_isUsed == 1 ? rec("EVSEMaximumVoltage",v.EVSEMaximumVoltage):unused,
+            rec("EVSEID",v.EVSEID),
+            v.SAScheduleTupleID_isUsed == 1 ? rec("SAScheduleTupleID",v.SAScheduleTupleID):unused,
+            v.MeterInfo_isUsed == 1 ? rec("MeterInfo",v.MeterInfo):unused,
+            v.ReceiptRequired_isUsed == 1 ? rec("ReceiptRequired",v.ReceiptRequired_isUsed):unused
         );    
     }    
 

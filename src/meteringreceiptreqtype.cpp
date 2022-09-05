@@ -56,4 +56,12 @@ namespace ceps2openv2g{
         });
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2MeteringReceiptReqType v){
+        return rec("MeteringReceiptReqType",
+            rec("Id",v.Id),
+            rec("SessionID",v.SessionID),
+            v.SAScheduleTupleID_isUsed == 1? rec("SAScheduleTupleID",v.SAScheduleTupleID):unused,
+            rec("MeterInfo",v.MeterInfo)
+        );
+     }    
 }

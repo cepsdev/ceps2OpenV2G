@@ -42,4 +42,11 @@ namespace ceps2openv2g{
         });
         return r;
     }
+
+    template<> node_t MessageBuilder::strct(appHandAnonType_supportedAppProtocolRes v){
+        return rec("appHandAnonType_supportedAppProtocolRes",
+            rec("ResponseCode",v.ResponseCode),
+            v.SchemaID_isUsed == 1? rec("SchemaID",v.SchemaID):unused
+        );    
+    }
 }

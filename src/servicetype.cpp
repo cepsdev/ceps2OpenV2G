@@ -30,4 +30,9 @@ namespace ceps2openv2g{
         );
         return res;
     }
+    template<> node_t MessageBuilder::strct(iso2ServiceType v){
+        return rec("ServiceType"
+        );    
+    }
+
 }

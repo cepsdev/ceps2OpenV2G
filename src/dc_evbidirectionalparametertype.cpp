@@ -143,4 +143,26 @@ namespace ceps2openv2g{
         });    
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2DC_EVBidirectionalParameterType v){
+        return rec("EVChargeParameterType",
+            rec("DepartureTime",v.DepartureTime),
+            v.EVMaximumChargePower_isUsed == 1? rec("EVMaximumChargePower",v.EVMaximumChargePower):unused,
+            v.EVMinimumChargePower_isUsed == 1? rec("EVMinimumChargePower",v.EVMinimumChargePower):unused,
+            rec("EVMaximumChargeCurrent",v.EVMaximumChargeCurrent),
+            rec("EVMinimumChargeCurrent",v.EVMinimumChargeCurrent),
+            rec("EVMaximumVoltage",v.EVMaximumVoltage),
+            v.EVTargetEnergyRequest_isUsed == 1? rec("EVTargetEnergyRequest",v.EVTargetEnergyRequest):unused,
+            v.EVMaximumEnergyRequest_isUsed == 1? rec("EVMaximumEnergyRequest",v.EVMaximumEnergyRequest):unused,
+            v.EVMinimumEnergyRequest_isUsed == 1? rec("EVMinimumEnergyRequest",v.EVMinimumEnergyRequest):unused,
+            v.CurrentSOC_isUsed == 1? rec("CurrentSOC",v.CurrentSOC):unused,
+            v.TargetSOC_isUsed == 1? rec("CurrentSOC",v.TargetSOC):unused,
+            v.BulkSOC_isUsed == 1? rec("CurrentSOC",v.BulkSOC):unused,
+            v.EVMaximumDischargePower_isUsed == 1? rec("EVMaximumDischargePower",v.EVMaximumDischargePower):unused,
+            v.EVMinimumDischargePower_isUsed == 1? rec("EVMinimumDischargePower",v.EVMinimumDischargePower):unused,
+            rec("EVMaximumDischargeCurrent",v.EVMaximumDischargeCurrent),
+            rec("EVMinimumDischargeCurrent",v.EVMinimumDischargeCurrent),
+            rec("EVMinimumVoltage",v.EVMinimumVoltage),
+            v.MinimumSOC_isUsed == 1? rec("MinimumSOC",v.MinimumSOC_isUsed):unused
+        );    
+    }
 }

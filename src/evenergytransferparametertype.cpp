@@ -36,4 +36,9 @@ namespace ceps2openv2g{
         );
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2EVEnergyTransferParameterType v){
+        return rec("EVEnergyTransferParameterType",
+            rec("DepartureTime",v.DepartureTime)
+        );    
+    }
 }

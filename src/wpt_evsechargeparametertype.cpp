@@ -40,4 +40,10 @@ namespace ceps2openv2g{
         });    
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2WPT_EVSEChargeParameterType v){
+        return rec("WPT_EVSEChargeParamterType",
+            rec("EVSEMaximumPower",v.EVSEMaximumPower),
+            rec("EVSEMinimumPower",v.EVSEMinimumPower)
+        );    
+    }
 }

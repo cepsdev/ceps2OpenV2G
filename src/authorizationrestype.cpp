@@ -35,4 +35,9 @@ namespace ceps2openv2g{
         });
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2AuthorizationResType v){
+        return rec("AuthorizationResType",
+            rec("EVSEProcessing",v.EVSEProcessing)
+        );    
+    }
 }

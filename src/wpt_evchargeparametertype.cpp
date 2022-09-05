@@ -64,4 +64,14 @@ namespace ceps2openv2g{
         });    
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2WPT_EVChargeParameterType v){
+        return rec("WPT_EVChargeParamterType",
+            rec("DepartureTime",v.DepartureTime),
+            rec("EVMaximumPower",v.EVMaximumPower),
+            rec("EVMinimumPower",v.EVMinimumPower),
+            v.EVTargetEnergyRequest_isUsed == 1? rec("EVTargetEnergyRequest",v.EVTargetEnergyRequest):unused,
+            v.EVMaximumEnergyRequest_isUsed == 1 ? rec("EVMaximumEnergyRequest",v.EVMaximumEnergyRequest):unused,
+            v.EVMinimumEnergyRequest_isUsed == 1 ? rec("EVMinimumEnergyRequest",v.EVMinimumEnergyRequest):unused
+        );    
+    }
 }

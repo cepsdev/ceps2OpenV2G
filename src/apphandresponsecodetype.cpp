@@ -38,4 +38,9 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(appHandresponseCodeType v){
+        return rec("appHandresponseCodeType"
+
+        );    
+    }
 }

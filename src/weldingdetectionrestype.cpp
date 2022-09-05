@@ -35,4 +35,9 @@ namespace ceps2openv2g{
         });        
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2WeldingDetectionResType v){
+        return rec("WeldingDetectionResType",
+            rec("EVSEPresentVoltage",v.EVSEPresentVoltage)
+        );    
+    }
 }

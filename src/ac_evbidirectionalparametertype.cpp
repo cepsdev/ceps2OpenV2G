@@ -96,7 +96,7 @@ namespace ceps2openv2g{
             rec("DepartureTime",v.DepartureTime),
             rec("EVMaximumChargePower",v.EVMaximumChargePower),
             rec("EVMaximumChargeCurrent",v.EVMaximumChargeCurrent),
-            rec("EVTargetEnergyRequest",v.EVTargetEnergyRequest),
+            v.EVTargetEnergyRequest_isUsed == 1? rec("EVTargetEnergyRequest",v.EVTargetEnergyRequest):unused,
             v.EVMaximumEnergyRequest_isUsed == 1 ? rec("EVMaximumEnergyRequest",v.EVMaximumEnergyRequest):unused,
             v.EVMinimumEnergyRequest_isUsed == 1 ? rec("EVMinimumEnergyRequest",v.EVMinimumEnergyRequest):unused,
             rec("EVMaximumVoltage",v.EVMaximumVoltage),
