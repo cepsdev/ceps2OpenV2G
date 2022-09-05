@@ -1,0 +1,37 @@
+identity_transformation{
+    for(e : root.expressions.content()){
+    entry{ in{e;};
+        out{v2g(
+            v2g(
+                e
+        ));};
+     };
+    }
+};
+
+results{
+    for (e: root.identity_transformation.content()){
+     entry{ e.entry.in;
+        e.entry.out;
+        symbolic_equality(
+            e.entry.in.content(),
+            e.entry.out.content()
+        );
+     };
+    }
+};
+
+val ctr = 1;
+for(e:root.results.content()){
+    print("Test #", ctr, " : ");
+    if (as_int(e.entry.diff.equal.content()) == 1) print("PASSED\n"); 
+    else{
+        print("FAILED\n");
+        print(" Expected          :   >> ",e.entry.in," <<\n");
+        print(" Found             :   >> ",e.entry.out," <<\n");
+        print(" Details           :   >> ", e.entry.diff.reason.content().at(0)," <<\n", 
+              "                          is not equal to\n",
+              "                       >> ", e.entry.diff.reason.content().at(1), " <<\n" );
+    }
+    let ctr = ctr + 1;
+}
