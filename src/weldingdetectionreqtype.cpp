@@ -27,4 +27,9 @@ namespace ceps2openv2g{
         iso2WeldingDetectionReqType r{};
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2WeldingDetectionReqType v){
+        return rec("WeldingDetectionReqType"
+            //rec()
+        );    
+    }
 }

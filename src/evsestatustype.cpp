@@ -44,4 +44,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2EVSEStatusType v){
+        return rec("EVSEStatusType",
+            rec("NotificatificationMaxDely",v.NotificationMaxDelay),
+            rec("EVSENotification",v.EVSENotification)
+        );    
+    }
 }

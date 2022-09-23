@@ -44,4 +44,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2ServiceDetailResType v){
+        return rec("ServiceDetailResType",
+            rec("ServiceID",v.ServiceID),
+            v.ServiceParameterList_isUsed == 1? rec("ServiceParameterList",v.ServiceParameterList):unused
+        );    
+    }
 }

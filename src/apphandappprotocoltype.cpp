@@ -65,4 +65,12 @@ namespace ceps2openv2g{
         });        
         return r;
     }
+    template<> node_t MessageBuilder::strct(appHandAppProtocolType v){
+        return rec("appHandAppProtocolType",
+            rec("ProtocolNamespace",v.ProtocolNamespace),
+            rec("VersionNumberMinor",v.VersionNumberMinor),
+            rec("SchemaID",v.SchemaID),
+            rec("Priority",v.Priority)
+        );    
+    }
 }

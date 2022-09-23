@@ -28,5 +28,10 @@ namespace ceps2openv2g{
         r.SAScheduleTuple.arrayLen = 
             read_array<iso2SAScheduleTupleType>(msg, r.SAScheduleTuple, string{"SAScheduleTuple"});
         return r;
+    }
+    template<> node_t MessageBuilder::strct(iso2SAScheduleListType v){
+        return rec("SAScheduleListType",
+            rec("SAScheduleTuple",v.SAScheduleTuple)
+        );    
     }    
 }

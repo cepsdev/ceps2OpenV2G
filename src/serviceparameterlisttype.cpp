@@ -27,5 +27,10 @@ namespace ceps2openv2g{
         iso2ServiceParameterListType r{};
         r.ParameterSet.arrayLen = read_array<iso2ParameterSetType>(msg, r.ParameterSet, string{"ParameterSet"});
         return r;
+    }
+    template<> node_t MessageBuilder::strct(iso2ServiceParameterListType v){
+        return rec("ServiceParameterListType",
+            rec("ParameterSet",v.ParameterSet)
+        );    
     }    
 }

@@ -60,4 +60,13 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2SAScheduleTupleType v){
+        return rec("SAScheduleTupleType",
+            rec("SAScheduleTupleID",v.SAScheduleTupleID),
+            rec("PMaxSchedule",v.PMaxSchedule),
+            v.PMaxDischargeSchedule_isUsed == 1? rec("PMaxDischargeSchedule",v.PMaxDischargeSchedule):unused,
+            v.SalesTariff_isUsed == 1 ? rec("SalesTariff",v.SalesTariff):unused,
+            v.BuyBackTariff_isUsed == 1 ? rec("BuyBackTariff",v.BuyBackTariff):unused
+        );    
+    }
 }

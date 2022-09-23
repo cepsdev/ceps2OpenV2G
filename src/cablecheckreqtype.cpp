@@ -27,4 +27,8 @@ namespace ceps2openv2g{
         iso2CableCheckReqType r{};
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2CableCheckReqType v){
+        return rec("CableCheckReqType"
+        );    
+    }
 }

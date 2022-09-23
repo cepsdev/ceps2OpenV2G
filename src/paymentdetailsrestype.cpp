@@ -42,4 +42,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2PaymentDetailsResType v){
+        return rec("PaymentDetailsResType",
+            rec("GenChallenge",v.GenChallenge),
+            rec("EVSETimeStamp",v.EVSETimeStamp)
+        );    
+    }
 }

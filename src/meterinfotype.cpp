@@ -74,5 +74,15 @@ namespace ceps2openv2g{
             }
         });
         return r;
-    }            
+    }
+     template<> node_t MessageBuilder::strct(iso2MeterInfoType v){
+        return rec("MeterInfoType",
+            rec("MeterID",v.MeterID),
+            v.MeterReadingCharged_isUsed == 1? rec("MeterReadingCharged",v.MeterReadingCharged):unused,
+            v.MeterReadingDischarged_isUsed == 1 ? rec("MeterReadingDischarged",v.MeterReadingDischarged):unused,
+            v.SigMeterReading_isUsed == 1 ? rec("SigMeterReading",v.SigMeterReading):unused,
+            v.MeterStatus_isUsed == 1 ? rec("MeterStatus",v.MeterStatus):unused,
+            v.TMeter_isUsed == 1 ? rec("TMeter",v.TMeter):unused
+        );
+     }                
 }

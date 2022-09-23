@@ -27,4 +27,9 @@ namespace ceps2openv2g{
         r.Service.arrayLen = MessageBuilder::read_array<iso2ServiceType>(msg, r.Service, string{"Service"});
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2ServiceListType v){
+        return rec("ServiceListType",
+            rec("Service",v.Service)
+        );    
+    }
 }

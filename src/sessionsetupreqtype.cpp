@@ -36,4 +36,9 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2SessionSetupReqType v){
+        return rec("SessionSetupReqType",
+            rec("EVCCID",v.EVCCID)
+        );    
+    }
 }

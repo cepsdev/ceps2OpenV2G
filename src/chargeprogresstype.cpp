@@ -39,4 +39,8 @@ namespace ceps2openv2g{
         });
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2chargeProgressType v){
+        return rec("chargeProgressType"
+        );    
+    }
 }

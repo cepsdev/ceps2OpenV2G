@@ -45,4 +45,11 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2PaymentServiceSelectionReqType v){
+        return rec("PaymentServiceSelectionReqType",
+            rec("SelectedPaymentOption",v.SelectedPaymentOption),
+            rec("SelectedEnergyTransferService",v.SelectedEnergyTransferService),
+            v.SelectedVASList_isUsed == 1? rec("SelectedVASList",v.SelectedVASList):unused
+        );    
+    }
 }

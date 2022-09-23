@@ -26,5 +26,9 @@ namespace ceps2openv2g{
     template<> iso2EVSEEnergyTransferParameterType MessageBuilder::emit<iso2EVSEEnergyTransferParameterType>(ceps::ast::Struct & msg){
         iso2EVSEEnergyTransferParameterType r{};
         return r;
+    }
+     template<> node_t MessageBuilder::strct(iso2EVSEEnergyTransferParameterType v){
+        return rec("EVSEEnergyTransferParameterType"
+        );    
     } 
 }

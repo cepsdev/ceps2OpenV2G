@@ -43,4 +43,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2PaymentDetailsReqType v){
+        return rec("PaymentDetailsReqType",
+            rec("eMAID",v.eMAID),
+            rec("ContractSignatureCertChain",v.ContractSignatureCertChain)
+        );    
+    }
 }

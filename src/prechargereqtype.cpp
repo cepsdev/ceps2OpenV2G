@@ -39,4 +39,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2PreChargeReqType v){
+        return rec("PreChargeReqType",
+            rec("EVTargetVoltage",v.EVTargetVoltage),
+            rec("EVTargetCurrent",v.EVTargetCurrent)
+        );    
+    }
 }

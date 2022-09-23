@@ -38,5 +38,10 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2ServiceDiscoveryReqType v){
+        return rec("ServiceDiscoveryReqType",
+            v.SupportedServiceIDs_isUsed == 1? rec("SupportedServiceIDs",v.SupportedServiceIDs):unused
+        );    
+    }
 
 }

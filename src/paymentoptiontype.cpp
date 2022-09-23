@@ -38,4 +38,9 @@ namespace ceps2openv2g{
         });
         return r;
     }
+    template<> node_t MessageBuilder::strct(iso2paymentOptionType v){
+        return rec("PaymentOptionType"
+            //rec("v2gpaymentOptionType",v.v2gpay)
+        );    
+    }
 }

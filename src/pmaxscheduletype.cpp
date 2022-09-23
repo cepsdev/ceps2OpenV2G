@@ -28,5 +28,10 @@ namespace ceps2openv2g{
         r.PMaxScheduleEntry.arrayLen = 
             read_array<iso2PMaxScheduleEntryType>(msg, r.PMaxScheduleEntry, string{"PMaxScheduleEntry"});
         return r;
+    }
+    template<> node_t MessageBuilder::strct(iso2PMaxScheduleType v){
+        return rec("PMaxScheduleType",
+            rec("PMaxScheduleEntry",v.PMaxScheduleEntry)
+        );    
     }   
 }

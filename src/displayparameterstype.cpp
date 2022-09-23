@@ -124,4 +124,20 @@ namespace ceps2openv2g{
         });
         return r;
     }
+     template<> node_t MessageBuilder::strct(iso2DisplayParametersType v){
+        return rec("DisplayParametersType",
+            v.CurrentRange_isUsed == 1? rec("CurrentRange",v.CurrentRange):unused,
+            v.CurrentSOC_isUsed == 1 ? rec("CurrentSOC",v.CurrentSOC):unused,
+            v.TargetSOC_isUsed == 1 ? rec("TargetSOC",v.TargetSOC):unused,
+            v.BulkSOC_isUsed == 1 ? rec("BulkSOC",v.BulkSOC):unused,
+            v.MinimumSOC_isUsed == 1 ? rec("MinimumSOC",v.MinimumSOC):unused,
+            v.ChargingPerformance_isUsed == 1 ? rec("ChargingPerformance",v.ChargingPerformance):unused,
+            v.RemainingTimeToTargetSOC_isUsed == 1 ? rec("RemainingTimeToTargetSOC",v.RemainingTimeToTargetSOC):unused,
+            v.RemainingTimeToBulkSOC_isUsed == 1 ? rec("RemainingTimeToBulkSOC",v.RemainingTimeToBulkSOC):unused,
+            v.RemainingTimeToMinimumSOC_isUsed == 1 ? rec("RemainingTimeToMinimumSOC",v.RemainingTimeToMinimumSOC):unused,
+            v.ChargingComplete_isUsed == 1 ? rec("ChargingComplete",v.ChargingComplete):unused,
+            v.BulkChargingComplete_isUsed == 1 ? rec("BulkChargingComplete",v.BulkChargingComplete):unused,
+            v.InletHot_isUsed == 1 ? rec("InletHot",v.InletHot):unused
+        );    
+    }
 }

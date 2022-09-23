@@ -27,5 +27,10 @@ namespace ceps2openv2g{
         iso2SelectedServiceListType r{};
         r.SelectedService.arrayLen = read_array<iso2SelectedServiceType>(msg, r.SelectedService, string{"SelectedService"});
         return r;
+    }
+    template<> node_t MessageBuilder::strct(iso2SelectedServiceListType v){
+        return rec("SelectedServiceListType",
+            rec("SelectedService",v.SelectedService)
+        );    
     }    
 }
